@@ -1,3 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Tic Tac Toe</string>
+    <string name="start_message">Start a New Game</string>
+    <string name="android_turn">It\'s Android\'s turn.</string>
+    <string name="user_turn">It\'s your turn (X).</string>
+    <string name="tie">It\'s a tie!</string>
+    <string name="user_win">You won!</string>
+    <string name="android_win">Android won!</string>
+    <string name="user_start">"You go first."</string>
 </resources>
