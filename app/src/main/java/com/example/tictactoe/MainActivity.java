@@ -3,8 +3,11 @@ package com.example.tictactoe;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +25,34 @@ public class MainActivity extends AppCompatActivity {
     private Button startButton;
     // Game Over
     Boolean mGameOver;
+    RadioGroup radioGroup;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        mGame = new TicTacToeGame();
+        mBoardButtons = new Button[mGame.BOARD_SIZE];
+        mBoardButtons[0] = (Button) findViewById(R.id.button0);
+        mBoardButtons[1] = (Button) findViewById(R.id.button1);
+        mBoardButtons[2] = (Button) findViewById(R.id.button2);
+        mBoardButtons[3] = (Button) findViewById(R.id.button3);
+        mBoardButtons[4] = (Button) findViewById(R.id.button4);
+        mBoardButtons[5] = (Button) findViewById(R.id.button5);
+        mBoardButtons[6] = (Button) findViewById(R.id.button6);
+        mBoardButtons[7] = (Button) findViewById(R.id.button7);
+        mBoardButtons[8] = (Button) findViewById(R.id.button8);
+        mInfoTextView = (TextView) findViewById(R.id.information);
+
+        radioGroup = (RadioGroup) findViewById(R.id.radio_group);
+
+        mGame = new TicTacToeGame();
+        mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
+
+        startNewGame();
+
+    }
 
     //--- OnClickListener for Restart a New Game Button
     public void newGame(View v) {
@@ -88,15 +119,28 @@ public class MainActivity extends AppCompatActivity {
             mBoardButtons[i].setEnabled(true);
             mBoardButtons[i].setOnClickListener(new ButtonClickListener(i));
         }
+
         //---Human goes first
-        mInfoTextView.setText(R.string.user_start);
+        switch (mGame.getTurn()){
+            case TicTacToeGame.HUMAN_PLAYER:
+                mInfoTextView.setText(R.string.user_start);
+                break;
+            case TicTacToeGame.COMPUTER_PLAYER:
+                int winner = mGame.checkForWinner();
+                if (winner == 0) {
+                    mInfoTextView.setText(R.string.android_turn);
+                    int move = mGame.getComputerMove();
+                    setMove(TicTacToeGame.COMPUTER_PLAYER, move);
+                }
+                break;
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // add
-        for (int i = 0; i < 9; i++) {
-            savedInstanceState.putString("button " + i, mBoardButtons[i].getText().toString());
+        for (int i = 0; i < mBoardButtons.length; i++) {
+            savedInstanceState.putString("button_" + i, mBoardButtons[i].getText().toString());
+            Log.i("DEBUG", i + ": " + mBoardButtons[i].getText().toString());
         }
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -104,44 +148,32 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        // add
-        // boolean myBoolean = savedInstanceState.getBoolean("MyBoolean");
-        for (int i = 0; i < 9; i++) {
-            mBoardButtons[i].setText(savedInstanceState.getString("button " + i));
+        for (int i = 0; i < mBoardButtons.length; i++) {
+            String str_i = savedInstanceState.getString("button_" + i);
+            if (!str_i.isEmpty() && str_i != null) {
+                char char_i = str_i.charAt(0);
+                if (char_i == TicTacToeGame.HUMAN_PLAYER || char_i == TicTacToeGame.COMPUTER_PLAYER)
+                    setMove(char_i, i);
+            }
         }
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+//        boolean checked = ((RadioButton) view).isChecked();
 
-        // Checks the orientation of the screen
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        // Check which radio button was clicked
+        switch(view.getId()) {
+//            Log.i("DEBUG", "Radio = " + mGame.getTurn());
+            case R.id.radio_human:
+                Toast.makeText(this, "HUMAN_PLAYER", Toast.LENGTH_SHORT).show();
+                mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
+                break;
+            case R.id.radio_android:
+                Toast.makeText(this, "COMPUTER_PLAYER", Toast.LENGTH_SHORT).show();
+                mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
+                break;
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        mGame = new TicTacToeGame();
-        mBoardButtons = new Button[mGame.BOARD_SIZE];
-        mBoardButtons[0] = (Button) findViewById(R.id.button0);
-        mBoardButtons[1] = (Button) findViewById(R.id.button1);
-        mBoardButtons[2] = (Button) findViewById(R.id.button2);
-        mBoardButtons[3] = (Button) findViewById(R.id.button3);
-        mBoardButtons[4] = (Button) findViewById(R.id.button4);
-        mBoardButtons[5] = (Button) findViewById(R.id.button5);
-        mBoardButtons[6] = (Button) findViewById(R.id.button6);
-        mBoardButtons[7] = (Button) findViewById(R.id.button7);
-        mBoardButtons[8] = (Button) findViewById(R.id.button8);
-        mInfoTextView = (TextView) findViewById(R.id.information);
-        mGame = new TicTacToeGame();
-
         startNewGame();
     }
 }

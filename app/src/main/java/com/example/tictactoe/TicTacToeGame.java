@@ -10,6 +10,7 @@ public class TicTacToeGame {
     public static final char COMPUTER_PLAYER = 'O';
     public static final char OPEN_SPOT = ' ';
     public static final int BOARD_SIZE = 9;
+    private char turn = HUMAN_PLAYER;
     private char mBoard[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     private Random mRand;
 
@@ -18,7 +19,6 @@ public class TicTacToeGame {
         // Seed the random number generator
         mRand = new Random();
 
-        char turn = HUMAN_PLAYER; // Human starts first
         int win = 0; // Set to 1, 2, or 3 when game is over
     }
 
@@ -166,5 +166,13 @@ public class TicTacToeGame {
         } while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);
         mBoard[move] = COMPUTER_PLAYER;
         return move;
+    }
+
+    public char getTurn() {
+        return turn;
+    }
+
+    public void setTurn(char turn) {
+        this.turn = turn;
     }
 }

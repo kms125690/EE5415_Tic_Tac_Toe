@@ -8,4 +8,8 @@
     <string name="user_win">你嬴了!</string>
     <string name="android_win">安卓嬴了!</string>
     <string name="user_start">你行先</string>
+    <string name="android_start">安卓行先</string>
+
+    <string name="android">安卓</string>
+    <string name="user">玩家</string>
 </resources>
