@@ -1,11 +1,14 @@
 package com.example.tictactoe;
 
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -30,22 +33,21 @@ public class MainActivity extends AppCompatActivity {
     // Game Over
     Boolean mGameOver;
     RadioGroup radioGroup;
+    Animation scaleUp, scaleDown;
+    MediaPlayer mp;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mGame = new TicTacToeGame();
         init();
-        mGame.setTurn(turn);
-
+        mGame = new TicTacToeGame();
         startNewGame();
     }
 
     private void init() {
-        mBoardButtons = new Button[mGame.BOARD_SIZE];
+        mBoardButtons = new Button[TicTacToeGame.BOARD_SIZE];
         mBoardButtons[0] = (Button) findViewById(R.id.button0);
         mBoardButtons[1] = (Button) findViewById(R.id.button1);
         mBoardButtons[2] = (Button) findViewById(R.id.button2);
@@ -62,6 +64,11 @@ public class MainActivity extends AppCompatActivity {
         mUserScore = (TextView) findViewById(R.id.tv_user_score);
         mAndroidScore = (TextView) findViewById(R.id.tv_android_score);
         mTie = (TextView) findViewById(R.id.tv_tie);
+
+        scaleUp = AnimationUtils.loadAnimation(this, R.anim.scale_up);
+        scaleDown = AnimationUtils.loadAnimation(this, R.anim.scale_down);
+
+        mp = MediaPlayer.create(this, R.raw.on_click);
     }
 
     //--- OnClickListener for Restart a New Game Button
@@ -75,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         mBoardButtons[location].setText(String.valueOf(player));
         if (player == TicTacToeGame.HUMAN_PLAYER)
             mBoardButtons[location].setTextColor(Color.rgb(0, 200, 0));
-        else
+        else if (player == TicTacToeGame.COMPUTER_PLAYER)
             mBoardButtons[location].setTextColor(Color.rgb(200, 0, 0));
     }
 
@@ -89,15 +96,16 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             if (mGameOver == false) {
                 if (mBoardButtons[location].isEnabled()) {
+                    mp.start();
+
                     setMove(TicTacToeGame.HUMAN_PLAYER, location);
+
+                    mBoardButtons[location].startAnimation(scaleUp);
+                    mBoardButtons[location].startAnimation(scaleDown);
+
                     //--- If no winner yet, let the computer make a move
+                    androidMove();
                     int winner = mGame.checkForWinner();
-                    if (winner == 0) {
-                        mInfoTextView.setText(R.string.android_turn);
-                        int move = mGame.getComputerMove();
-                        setMove(TicTacToeGame.COMPUTER_PLAYER, move);
-                        winner = mGame.checkForWinner();
-                    }
                     if (winner == 0) {
                         mInfoTextView.setTextColor(Color.rgb(0, 0, 0));
                         mInfoTextView.setText(R.string.user_turn);
@@ -133,18 +141,13 @@ public class MainActivity extends AppCompatActivity {
             mBoardButtons[i].setOnClickListener(new ButtonClickListener(i));
         }
 
-        //---Human goes first
+        // check who go first
         switch (mGame.getTurn()){
             case TicTacToeGame.HUMAN_PLAYER:
                 mInfoTextView.setText(R.string.user_start);
                 break;
             case TicTacToeGame.COMPUTER_PLAYER:
-                int winner = mGame.checkForWinner();
-                if (winner == 0) {
-                    mInfoTextView.setText(R.string.android_turn);
-                    int move = mGame.getComputerMove();
-                    setMove(TicTacToeGame.COMPUTER_PLAYER, move);
-                }
+                androidMove();
                 break;
         }
     }
@@ -162,6 +165,17 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private void androidMove() {
+        int winner = mGame.checkForWinner();
+        if (winner == 0) {
+            mInfoTextView.setText(R.string.android_turn);
+            int move = mGame.getComputerMove();
+            setMove(TicTacToeGame.COMPUTER_PLAYER, move);
+            mBoardButtons[move].startAnimation(scaleUp);
+            mBoardButtons[move].startAnimation(scaleDown);
+        }
+    }
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         for (int i = 0; i < mBoardButtons.length; i++) {
@@ -171,9 +185,9 @@ public class MainActivity extends AppCompatActivity {
 
         int selectedId = radioGroup.getCheckedRadioButtonId();
         RadioButton selectedRadioButton = (RadioButton) findViewById(selectedId);
-        if (selectedRadioButton.getText().toString().equals(R.string.user))
+        if (selectedRadioButton.getText().toString().equals(getResources().getString(R.string.user)))
             savedInstanceState.putString("start", getResources().getString(R.string.user));
-        else if (selectedRadioButton.getText().toString().equals(R.string.android))
+        else if (selectedRadioButton.getText().toString().equals(getResources().getString(R.string.android)))
             savedInstanceState.putString("start", getResources().getString(R.string.android));
 
         savedInstanceState.putString("user_score", mUserScore.getText().toString());
@@ -195,10 +209,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String str = savedInstanceState.getString("start");
+        Log.i("DEBUG", "onRestoreInstanceState: " + str);
+        Log.i("DEBUG", "onRestoreInstanceState: " + getResources().getString(R.string.user));
+        Log.i("DEBUG", "onRestoreInstanceState: " + getResources().getString(R.string.android));
         if (str.equals(getResources().getString(R.string.user)))
-            turn = TicTacToeGame.HUMAN_PLAYER;
+            mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
         else if (str.equals(getResources().getString(R.string.android)))
-            turn = TicTacToeGame.COMPUTER_PLAYER;
+            mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
 
         mUserScore.setText(savedInstanceState.getString("user_score"));
         mAndroidScore.setText(savedInstanceState.getString("android_score"));
@@ -206,12 +223,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onRadioButtonClicked(@NonNull View view) {
-        // Is the button now checked?
-//        boolean checked = ((RadioButton) view).isChecked();
-
-        // Check which radio button was clicked
         switch(view.getId()) {
-//            Log.i("DEBUG", "Radio = " + mGame.getTurn());
             case R.id.radio_human:
                 Toast.makeText(this, "HUMAN_PLAYER", Toast.LENGTH_SHORT).show();
                 mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);

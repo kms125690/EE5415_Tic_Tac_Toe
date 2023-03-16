@@ -13,6 +13,11 @@
     <string name="android">安卓</string>
     <string name="user">玩家</string>
 
+    <string name="start">開始:</string>
+
+    <string name="wins">次數: </string>
+    <string name="ties">打和</string>
+
     <string name="name_level_1">初級</string>
     <string name="name_level_2">中級</string>
     <string name="name_level_3">高級</string>

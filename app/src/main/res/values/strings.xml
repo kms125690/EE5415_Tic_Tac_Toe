@@ -13,6 +13,11 @@
     <string name="android">Android</string>
     <string name="user">Human</string>
 
+    <string name="start">Start:</string>
+
+    <string name="wins">Wins:</string>
+    <string name="ties">Ties</string>
+
     <string name="name_level_1">Easy</string>
     <string name="name_level_2">Medium</string>
     <string name="name_level_3">Expert</string>
