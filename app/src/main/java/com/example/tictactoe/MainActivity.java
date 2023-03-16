@@ -1,9 +1,10 @@
 package com.example.tictactoe;
 
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -11,6 +12,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,9 +25,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView mInfoTextView;
     // Restart Button
     private Button startButton;
+    private TextView mUserScore, mAndroidScore, mTie;
+    private char turn = TicTacToeGame.HUMAN_PLAYER;
     // Game Over
     Boolean mGameOver;
     RadioGroup radioGroup;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +38,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mGame = new TicTacToeGame();
+        init();
+        mGame.setTurn(turn);
+
+        startNewGame();
+    }
+
+    private void init() {
         mBoardButtons = new Button[mGame.BOARD_SIZE];
         mBoardButtons[0] = (Button) findViewById(R.id.button0);
         mBoardButtons[1] = (Button) findViewById(R.id.button1);
@@ -47,11 +59,9 @@ public class MainActivity extends AppCompatActivity {
 
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
 
-        mGame = new TicTacToeGame();
-        mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
-
-        startNewGame();
-
+        mUserScore = (TextView) findViewById(R.id.tv_user_score);
+        mAndroidScore = (TextView) findViewById(R.id.tv_android_score);
+        mTie = (TextView) findViewById(R.id.tv_tie);
     }
 
     //--- OnClickListener for Restart a New Game Button
@@ -93,14 +103,17 @@ public class MainActivity extends AppCompatActivity {
                         mInfoTextView.setText(R.string.user_turn);
                     } else if (winner == 1) {
                         mInfoTextView.setTextColor(Color.rgb(0, 0, 200));
+                        addScore(mTie);
                         mInfoTextView.setText(R.string.tie);
                         mGameOver = true;
                     } else if (winner == 2) {
                         mInfoTextView.setTextColor(Color.rgb(0, 200, 0));
+                        addScore(mUserScore);
                         mInfoTextView.setText(R.string.user_win);
                         mGameOver = true;
                     } else {
                         mInfoTextView.setTextColor(Color.rgb(200, 0, 0));
+                        addScore(mAndroidScore);
                         mInfoTextView.setText(R.string.android_win);
                         mGameOver = true;
                     }
@@ -136,12 +149,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean addScore(@NonNull TextView tv) {
+        if (tv.getText().toString() == null)
+            return false;
+        int score;
+        try {
+            score = Integer.parseInt(tv.getText().toString());
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        tv.setText(String.valueOf(++score));
+        return true;
+    }
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         for (int i = 0; i < mBoardButtons.length; i++) {
             savedInstanceState.putString("button_" + i, mBoardButtons[i].getText().toString());
             Log.i("DEBUG", i + ": " + mBoardButtons[i].getText().toString());
         }
+
+        int selectedId = radioGroup.getCheckedRadioButtonId();
+        RadioButton selectedRadioButton = (RadioButton) findViewById(selectedId);
+        if (selectedRadioButton.getText().toString().equals(R.string.user))
+            savedInstanceState.putString("start", getResources().getString(R.string.user));
+        else if (selectedRadioButton.getText().toString().equals(R.string.android))
+            savedInstanceState.putString("start", getResources().getString(R.string.android));
+
+        savedInstanceState.putString("user_score", mUserScore.getText().toString());
+        savedInstanceState.putString("android_score", mAndroidScore.getText().toString());
+        savedInstanceState.putString("tie", mTie.getText().toString());
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -156,9 +193,19 @@ public class MainActivity extends AppCompatActivity {
                     setMove(char_i, i);
             }
         }
+
+        String str = savedInstanceState.getString("start");
+        if (str.equals(getResources().getString(R.string.user)))
+            turn = TicTacToeGame.HUMAN_PLAYER;
+        else if (str.equals(getResources().getString(R.string.android)))
+            turn = TicTacToeGame.COMPUTER_PLAYER;
+
+        mUserScore.setText(savedInstanceState.getString("user_score"));
+        mAndroidScore.setText(savedInstanceState.getString("android_score"));
+        mTie.setText(savedInstanceState.getString("tie"));
     }
 
-    public void onRadioButtonClicked(View view) {
+    public void onRadioButtonClicked(@NonNull View view) {
         // Is the button now checked?
 //        boolean checked = ((RadioButton) view).isChecked();
 
@@ -175,5 +222,22 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         startNewGame();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_exit:
+                finish();
+                return true;
+        }
+        return false;
     }
 }
