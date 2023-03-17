@@ -4,10 +4,13 @@
     <group android:id="@+id/group_level"
         android:checkableBehavior="single">
         <item android:id="@+id/menu_level_1"
+            android:checked="false"
             android:title="@string/name_level_1"/>
         <item android:id="@+id/menu_level_2"
+            android:checked="true"
             android:title="@string/name_level_2"/>
         <item android:id="@+id/menu_level_3"
+            android:checked="false"
             android:title="@string/name_level_3"/>
     </group>
     <item

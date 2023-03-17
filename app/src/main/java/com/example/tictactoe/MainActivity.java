@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     Animation scaleUp, scaleDown;
     MediaPlayer mp;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,7 +168,18 @@ public class MainActivity extends AppCompatActivity {
         int winner = mGame.checkForWinner();
         if (winner == 0) {
             mInfoTextView.setText(R.string.android_turn);
-            int move = mGame.getComputerMoveLevel3();
+            int move = -1;
+            switch (mGame.getDifficulty()){
+                case level_1:
+                    move = mGame.getComputerMoveLevel1();
+                    break;
+                case level_2:
+                    move = mGame.getComputerMoveLevel2();
+                    break;
+                case level_3:
+                    move = mGame.getComputerMoveLevel3();
+                    break;
+            }
             setMove(TicTacToeGame.COMPUTER_PLAYER, move);
             mBoardButtons[move].startAnimation(scaleUp);
             mBoardButtons[move].startAnimation(scaleDown);
@@ -209,9 +219,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String str = savedInstanceState.getString("start");
-        Log.i("DEBUG", "onRestoreInstanceState: " + str);
-        Log.i("DEBUG", "onRestoreInstanceState: " + getResources().getString(R.string.user));
-        Log.i("DEBUG", "onRestoreInstanceState: " + getResources().getString(R.string.android));
         if (str.equals(getResources().getString(R.string.user)))
             mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
         else if (str.equals(getResources().getString(R.string.android)))
@@ -246,6 +253,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.menu_level_1:
+                if (mGame != null)
+                    mGame.setDifficulty(level.level_1);
+                return true;
+            case R.id.menu_level_2:
+                if (mGame != null)
+                    mGame.setDifficulty(level.level_2);
+                return true;
+            case R.id.menu_level_3:
+                if (mGame != null)
+                    mGame.setDifficulty(level.level_3);
+                return true;
             case R.id.menu_exit:
                 finish();
                 return true;

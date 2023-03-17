@@ -30,9 +30,8 @@ public class TicTacToeGame {
 
     /** Clear the board of all X's and O's. */
     public void clearBoard() {
-        for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int i = 0; i < BOARD_SIZE; i++)
             mBoard[i] = OPEN_SPOT;
-        }
     }
 
     /** Set the given player at the given location on the game board * */
@@ -169,7 +168,7 @@ public class TicTacToeGame {
 
     static public int evaluate(char b[]) {
         // Checking for Rows for X or O victory.
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i <= 2; i++) {
             if (b[i] == b[i + 3] && b[i + 3] == b[i + 6]) {
                 if (b[i] == COMPUTER_PLAYER)
                     return +10;
@@ -279,7 +278,6 @@ public class TicTacToeGame {
                     bestVal = moveVal;
                 }
             }
-
         }
         System.out.printf("The value of the best Move Value " +  "is : %d\n", bestVal);
         System.out.printf("The value of the best Move " +  "is : %d\n", bestMove);
@@ -303,7 +301,7 @@ public class TicTacToeGame {
     }
 }
 
-
+//    NOT USED
 //    public void getUserMove()
 //    {
 //        // Eclipse throws a NullPointerException with Console.readLine
