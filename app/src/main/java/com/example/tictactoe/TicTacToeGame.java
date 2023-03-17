@@ -1,8 +1,14 @@
 package com.example.tictactoe;
 
+import android.util.Log;
+
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
+
+enum level {
+    level_1, level_2, level_3
+};
 
 public class TicTacToeGame {
     // Characters used to represent the human, computer, and open spots
@@ -13,6 +19,7 @@ public class TicTacToeGame {
     private char turn = HUMAN_PLAYER;
     private char mBoard[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     private Random mRand;
+    private level difficulty;
 
     public TicTacToeGame() {
         // Seed the random number generator
@@ -90,44 +97,18 @@ public class TicTacToeGame {
         return 1;
     }
 
-    public void getUserMove()
-    {
-        // Eclipse throws a NullPointerException with Console.readLine
-        // Known bug: https://bugs.eclipse.org/bugs/show_bug.cgi?id=122429
-        //Console console = System.console();
 
-        Scanner s = new Scanner(System.in);
 
-        int move = -1;
-
-        while (move == -1) {
-            try {
-                System.out.print("Enter your move: ");
-                move = s.nextInt();
-
-                while (move < 1 || move > BOARD_SIZE ||
-                        mBoard[move-1] == HUMAN_PLAYER || mBoard[move-1] == COMPUTER_PLAYER) {
-
-                    if (move < 1 || move > BOARD_SIZE)
-                        System.out.println("Please enter a move between 1 and " + BOARD_SIZE + ".");
-                    else
-                        System.out.println("That space is occupied.  Please choose another space.");
-
-                    System.out.print("Enter your move: ");
-                    move = s.nextInt();
-                }
-            }
-            catch (InputMismatchException ex) {
-                System.out.println("Please enter a number between 1 and " + BOARD_SIZE + ".");
-                s.next();  // Get next line so we start fresh
-                move = -1;
-            }
-        }
-
-        mBoard[move-1] = HUMAN_PLAYER;
+    public int getComputerMoveLevel1() {
+        int move;
+        do {
+            move = mRand.nextInt(BOARD_SIZE);
+        } while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);
+        mBoard[move] = COMPUTER_PLAYER;
+        return move;
     }
 
-    public int getComputerMove()
+    public int getComputerMoveLevel2()
     {
         int move;
         // First see if there's a move O can make to win
@@ -167,55 +148,58 @@ public class TicTacToeGame {
         return move;
     }
 
+    public int getComputerMoveLevel3() {
+        int move;
+        for (int i = 0; i < mBoard.length; i++) {
+            Log.i("print board", String.valueOf(i) + " " +String.valueOf(mBoard[i]));
+        }
+        move = findBestMove(mBoard);
+        Log.i("getComputerMoveLevel3", String.valueOf(move));
+        mBoard[move] = COMPUTER_PLAYER;
+        return move;
+    }
+
     // This function returns true if there are moves remaining on the board. It returns false if there are no moves left to play.
-    static Boolean isMovesLeft(char board[])
-    {
+    static public Boolean isMovesLeft(char board[]) {
         for (int i = 0; i < BOARD_SIZE; i++)
             if (board[i] == OPEN_SPOT)
                 return true;
         return false;
     }
 
-    static int evaluate(char b[])
-    {
+    static public int evaluate(char b[]) {
         // Checking for Rows for X or O victory.
-        for (int i = 0; i < 3; i++)
-        {
-            if (b[i] == b[i + 3] && b[i + 3] == b[i + 6])
-            {
-                if (b[i] == HUMAN_PLAYER)
+        for (int i = 0; i < 3; i++) {
+            if (b[i] == b[i + 3] && b[i + 3] == b[i + 6]) {
+                if (b[i] == COMPUTER_PLAYER)
                     return +10;
-                else if (b[i] == COMPUTER_PLAYER)
+                else if (b[i] == HUMAN_PLAYER)
                     return -10;
             }
         }
 
         // Checking for Columns for X or O victory.
-        for (int i = 0; i <= 6; i += 3)
-        {
-            if (b[i] == b[i + 1] && b[i + 1] == b[i + 2])
-            {
-                if (b[i] == HUMAN_PLAYER)
+        for (int i = 0; i <= 6; i += 3) {
+            if (b[i] == b[i + 1] && b[i + 1] == b[i + 2]) {
+                if (b[i] == COMPUTER_PLAYER)
                     return +10;
-                else if (b[i] == COMPUTER_PLAYER)
+                else if (b[i] == HUMAN_PLAYER)
                     return -10;
             }
         }
 
         // Checking for Diagonals for X or O victory.
-        if (b[0] == b[4] && b[4] == b[8])
-        {
-            if (b[0] == HUMAN_PLAYER)
+        if (b[0] == b[4] && b[4] == b[8]) {
+            if (b[0] == COMPUTER_PLAYER)
                 return +10;
-            else if (b[0] == COMPUTER_PLAYER)
+            else if (b[0] == HUMAN_PLAYER)
                 return -10;
         }
 
-        if (b[2] == b[4] && b[4] == b[6])
-        {
-            if (b[2] == HUMAN_PLAYER)
+        if (b[2] == b[4] && b[4] == b[6]) {
+            if (b[2] == COMPUTER_PLAYER)
                 return +10;
-            else if (b[2] == COMPUTER_PLAYER)
+            else if (b[2] == HUMAN_PLAYER)
                 return -10;
         }
 
@@ -224,7 +208,7 @@ public class TicTacToeGame {
     }
 
     // This is the minimax function. It considers all the possible ways the game can go and returns the value of the board
-    static int minimax(char board[], int depth, Boolean isMax)
+    static public int minimax(char board[], int depth, Boolean isMax)
     {
         int score = evaluate(board);
 
@@ -241,18 +225,14 @@ public class TicTacToeGame {
             return 0;
 
         // If this maximizer's move
-        if (isMax)
-        {
+        if (isMax) {
             int best = -1000;
-
             // Traverse all cells
-            for (int i = 0; i < BOARD_SIZE; i++)
-            {
+            for (int i = 0; i < BOARD_SIZE; i++) {
                 // Check if cell is empty
-                if (board[i] == OPEN_SPOT)
-                {
+                if (board[i] == OPEN_SPOT) {
                     // Make the move
-                    board[i] = HUMAN_PLAYER;
+                    board[i] = COMPUTER_PLAYER;
                     // Call minimax recursively and choose the maximum value
                     best = Math.max(best, minimax(board, depth + 1, !isMax));
                     // Undo the move
@@ -260,20 +240,14 @@ public class TicTacToeGame {
                 }
             }
             return best;
-        }
-
-        // If this minimizer's move
-        else
-        {
+        } else { // If this minimizer's move
             int best = 1000;
             // Traverse all cells
-            for (int i = 0; i < BOARD_SIZE; i++)
-            {
+            for (int i = 0; i < BOARD_SIZE; i++) {
                 // Check if cell is empty
-                if (board[i] == OPEN_SPOT)
-                {
+                if (board[i] == OPEN_SPOT) {
                     // Make the move
-                    board[i] = COMPUTER_PLAYER;
+                    board[i] = HUMAN_PLAYER;
                     // Call minimax recursively and choose the minimum value
                     best = Math.min(best, minimax(board, depth + 1, !isMax));
                     // Undo the move
@@ -285,33 +259,30 @@ public class TicTacToeGame {
     }
 
     // This will return the best possible move for the player
-    static int findBestMove(char board[])
-    {
+    static public int findBestMove(char board[]) {
         int bestVal = -1000;
         int bestMove = -1;
 
         // Traverse all cells, evaluate minimax function for all empty cells. And return the cell with optimal value.
-        for (int i = 0; i < BOARD_SIZE; i++)
-        {
+        for (int i = 0; i < BOARD_SIZE; i++) {
             // Check if cell is empty
-            if (board[i] == OPEN_SPOT)
-            {
+            if (board[i] == OPEN_SPOT) {
                 // Make the move
-                board[i] = HUMAN_PLAYER;
+                board[i] = COMPUTER_PLAYER;
                 // compute evaluation function for this move.
                 int moveVal = minimax(board, 0, false);
                 // Undo the move
                 board[i] = OPEN_SPOT;
                 // If the value of the current move is more than the best value, then update best
-                if (moveVal > bestVal)
-                {
+                if (moveVal > bestVal) {
                     bestMove = i;
                     bestVal = moveVal;
                 }
             }
 
         }
-        System.out.printf("The value of the best Move " +  "is : %d\n\n", bestVal);
+        System.out.printf("The value of the best Move Value " +  "is : %d\n", bestVal);
+        System.out.printf("The value of the best Move " +  "is : %d\n", bestMove);
         return bestMove;
     }
 
@@ -322,4 +293,50 @@ public class TicTacToeGame {
     public void setTurn(char turn) {
         this.turn = turn;
     }
+
+    public level getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(level difficulty) {
+        this.difficulty = difficulty;
+    }
 }
+
+
+//    public void getUserMove()
+//    {
+//        // Eclipse throws a NullPointerException with Console.readLine
+//        // Known bug: https://bugs.eclipse.org/bugs/show_bug.cgi?id=122429
+//        //Console console = System.console();
+//
+//        Scanner s = new Scanner(System.in);
+//
+//        int move = -1;
+//
+//        while (move == -1) {
+//            try {
+//                System.out.print("Enter your move: ");
+//                move = s.nextInt();
+//
+//                while (move < 1 || move > BOARD_SIZE ||
+//                        mBoard[move-1] == HUMAN_PLAYER || mBoard[move-1] == COMPUTER_PLAYER) {
+//
+//                    if (move < 1 || move > BOARD_SIZE)
+//                        System.out.println("Please enter a move between 1 and " + BOARD_SIZE + ".");
+//                    else
+//                        System.out.println("That space is occupied.  Please choose another space.");
+//
+//                    System.out.print("Enter your move: ");
+//                    move = s.nextInt();
+//                }
+//            }
+//            catch (InputMismatchException ex) {
+//                System.out.println("Please enter a number between 1 and " + BOARD_SIZE + ".");
+//                s.next();  // Get next line so we start fresh
+//                move = -1;
+//            }
+//        }
+//
+//        mBoard[move-1] = HUMAN_PLAYER;
+//    }

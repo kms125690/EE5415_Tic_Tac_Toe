@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             mBoardButtons[i].setOnClickListener(new ButtonClickListener(i));
         }
 
-        // check who go first
+        // who go first
         switch (mGame.getTurn()){
             case TicTacToeGame.HUMAN_PLAYER:
                 mInfoTextView.setText(R.string.user_start);
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         int winner = mGame.checkForWinner();
         if (winner == 0) {
             mInfoTextView.setText(R.string.android_turn);
-            int move = mGame.getComputerMove();
+            int move = mGame.getComputerMoveLevel3();
             setMove(TicTacToeGame.COMPUTER_PLAYER, move);
             mBoardButtons[move].startAnimation(scaleUp);
             mBoardButtons[move].startAnimation(scaleDown);
