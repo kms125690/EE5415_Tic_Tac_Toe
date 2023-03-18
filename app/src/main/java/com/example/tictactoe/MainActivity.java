@@ -1,6 +1,11 @@
 package com.example.tictactoe;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,8 +15,11 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +29,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
     // Represents the internal state of the game
     private TicTacToeGame mGame;
-
     // Buttons making up the board
     private Button mBoardButtons[];
     // Various text displayed
@@ -30,11 +37,14 @@ public class MainActivity extends AppCompatActivity {
     private Button startButton;
     private TextView mUserScore, mAndroidScore, mTie;
     private char turn = TicTacToeGame.HUMAN_PLAYER;
+    private TableLayout mticTacToe;
     // Game Over
     Boolean mGameOver;
     RadioGroup radioGroup;
     Animation scaleUp, scaleDown;
     MediaPlayer mp;
+    Switch mSoundSwitch;
+    Boolean sound = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         init();
         mGame = new TicTacToeGame();
         startNewGame();
+
+//        drawConnectedLine();
     }
 
     private void init() {
@@ -57,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         mBoardButtons[7] = (Button) findViewById(R.id.button7);
         mBoardButtons[8] = (Button) findViewById(R.id.button8);
         mInfoTextView = (TextView) findViewById(R.id.information);
+
+        mticTacToe = (TableLayout) findViewById(R.id.table_tic_tac_toe);
 
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
 
@@ -74,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
     public void newGame(View v) {
         startNewGame();
     }
+
+    public void regretMove(View v) { userRegretMove(); }
 
     private void setMove(char player, int location) {
         mGame.setMove(player, location);
@@ -95,7 +111,8 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             if (mGameOver == false) {
                 if (mBoardButtons[location].isEnabled()) {
-                    mp.start();
+                    if (sound)
+                        mp.start();
 
                     setMove(TicTacToeGame.HUMAN_PLAYER, location);
 
@@ -104,28 +121,53 @@ public class MainActivity extends AppCompatActivity {
 
                     //--- If no winner yet, let the computer make a move
                     androidMove();
-                    int winner = mGame.checkForWinner();
-                    if (winner == 0) {
-                        mInfoTextView.setTextColor(Color.rgb(0, 0, 0));
-                        mInfoTextView.setText(R.string.user_turn);
-                    } else if (winner == 1) {
-                        mInfoTextView.setTextColor(Color.rgb(0, 0, 200));
-                        addScore(mTie);
-                        mInfoTextView.setText(R.string.tie);
-                        mGameOver = true;
-                    } else if (winner == 2) {
-                        mInfoTextView.setTextColor(Color.rgb(0, 200, 0));
-                        addScore(mUserScore);
-                        mInfoTextView.setText(R.string.user_win);
-                        mGameOver = true;
-                    } else {
-                        mInfoTextView.setTextColor(Color.rgb(200, 0, 0));
-                        addScore(mAndroidScore);
-                        mInfoTextView.setText(R.string.android_win);
-                        mGameOver = true;
-                    }
+
+                    checkWinner();
+//                    int winner = mGame.checkForWinner();
+//                    if (winner == 0) {
+//                        mInfoTextView.setTextColor(Color.rgb(0, 0, 0));
+//                        mInfoTextView.setText(R.string.user_turn);
+//                    } else if (winner == 1) {
+//                        mInfoTextView.setTextColor(Color.rgb(0, 0, 200));
+//                        addScore(mTie);
+//                        mInfoTextView.setText(R.string.tie);
+//                        mGameOver = true;
+//                    } else if (winner == 2) {
+//                        mInfoTextView.setTextColor(Color.rgb(0, 200, 0));
+//                        addScore(mUserScore);
+//                        mInfoTextView.setText(R.string.user_win);
+//                        mGameOver = true;
+//                    } else {
+//                        mInfoTextView.setTextColor(Color.rgb(200, 0, 0));
+//                        addScore(mAndroidScore);
+//                        mInfoTextView.setText(R.string.android_win);
+//                        mGameOver = true;
+//                    }
                 }
             }
+        }
+    }
+
+    public void checkWinner() {
+        int winner = mGame.checkForWinner();
+        if (winner == 0) {
+            mInfoTextView.setTextColor(Color.rgb(0, 0, 0));
+            mInfoTextView.setText(R.string.user_turn);
+        } else if (winner == 1) {
+            mInfoTextView.setTextColor(Color.rgb(0, 0, 200));
+            addScore(mTie);
+            mInfoTextView.setText(R.string.tie);
+            mGameOver = true;
+        } else if (winner == 2) {
+            mInfoTextView.setTextColor(Color.rgb(0, 200, 0));
+            addScore(mUserScore);
+            mInfoTextView.setText(R.string.user_win);
+            mGameOver = true;
+        } else {
+            mInfoTextView.setTextColor(Color.rgb(200, 0, 0));
+            addScore(mAndroidScore);
+            mInfoTextView.setText(R.string.android_win);
+            mGameOver = true;
         }
     }
 
@@ -147,8 +189,27 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case TicTacToeGame.COMPUTER_PLAYER:
                 androidMove();
+                checkWinner();
                 break;
         }
+    }
+
+    private void userRegretMove() {
+        if (mGame != null && mGameOver == false) {
+            int regretMoves[] = mGame.regretMove();
+            if (regretMoves[0] == -1 || regretMoves[1] == -1)
+                return;
+
+            for (int i = 0; i < regretMoves.length; i++) {
+                mBoardButtons[regretMoves[i]].setText("");
+                mBoardButtons[regretMoves[i]].setEnabled(true);
+                mBoardButtons[regretMoves[i]].setOnClickListener(new ButtonClickListener(regretMoves[i]));
+            }
+
+            mInfoTextView.setTextColor(Color.rgb(0, 0, 0));
+            mInfoTextView.setText(R.string.user_turn);
+        }
+
     }
 
     private boolean addScore(@NonNull TextView tv) {
@@ -186,6 +247,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void drawConnectedLine(View view) {
+        Point pt1 = getPointOfView(mBoardButtons[0]);
+        Log.d("drawConnectedLine", "view point x,y (" + pt1.x + ", " + pt1.y + ")");
+
+        Point pt2 = getPointOfView(mBoardButtons[2]);
+        Log.d("drawConnectedLine", "view point x,y (" + pt2.x + ", " + pt2.y + ")");
+
+        Bitmap bitmap = Bitmap.createBitmap(mticTacToe.getWidth(), mticTacToe.getHeight(), Bitmap.Config.ARGB_8888);
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(5);
+
+        Canvas canvas = new Canvas(bitmap);
+
+        canvas.drawLine(0,0,100,100, paint);
+    }
+
+    private Point getPointOfView(View view) {
+        int[] location = new int[2];
+        view.getLocationInWindow(location);
+        return new Point(location[0], location[1]);
+    }
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         for (int i = 0; i < mBoardButtons.length; i++) {
@@ -200,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
         else if (selectedRadioButton.getText().toString().equals(getResources().getString(R.string.android)))
             savedInstanceState.putString("start", getResources().getString(R.string.android));
 
+        savedInstanceState.putString("curr_message", mInfoTextView.getText().toString());
         savedInstanceState.putString("user_score", mUserScore.getText().toString());
         savedInstanceState.putString("android_score", mAndroidScore.getText().toString());
         savedInstanceState.putString("tie", mTie.getText().toString());
@@ -224,6 +311,8 @@ public class MainActivity extends AppCompatActivity {
         else if (str.equals(getResources().getString(R.string.android)))
             mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
 
+        checkWinner();
+
         mUserScore.setText(savedInstanceState.getString("user_score"));
         mAndroidScore.setText(savedInstanceState.getString("android_score"));
         mTie.setText(savedInstanceState.getString("tie"));
@@ -233,11 +322,13 @@ public class MainActivity extends AppCompatActivity {
         switch(view.getId()) {
             case R.id.radio_human:
                 Toast.makeText(this, "HUMAN_PLAYER", Toast.LENGTH_SHORT).show();
-                mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
+                if (mGame != null)
+                    mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
                 break;
             case R.id.radio_android:
                 Toast.makeText(this, "COMPUTER_PLAYER", Toast.LENGTH_SHORT).show();
-                mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
+                if (mGame != null)
+                    mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
                 break;
         }
         startNewGame();
@@ -247,21 +338,38 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_options, menu);
+        MenuItem item = menu.findItem(R.id.menu_sound_switch);
+        item.setActionView(R.layout.switch_item);
+
+        mSoundSwitch = item.getActionView().findViewById(R.id.switchForActionBar);
+        mSoundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                sound = isChecked;
+            }
+        });
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        boolean checked = ((RadioButton) item).isChecked();
         switch (item.getItemId()) {
             case R.id.menu_level_1:
+                item.setChecked(item.isChecked() ? false : true);
+                Toast.makeText(this, getResources().getString(R.string.name_level_1), Toast.LENGTH_SHORT).show();
                 if (mGame != null)
                     mGame.setDifficulty(level.level_1);
                 return true;
             case R.id.menu_level_2:
+                item.setChecked(item.isChecked() ? false : true);
+                Toast.makeText(this, getResources().getString(R.string.name_level_2), Toast.LENGTH_SHORT).show();
                 if (mGame != null)
                     mGame.setDifficulty(level.level_2);
                 return true;
             case R.id.menu_level_3:
+                item.setChecked(item.isChecked() ? false : true);
+                Toast.makeText(this, getResources().getString(R.string.name_level_3), Toast.LENGTH_SHORT).show();
                 if (mGame != null)
                     mGame.setDifficulty(level.level_3);
                 return true;

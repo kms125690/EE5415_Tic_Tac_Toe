@@ -14,6 +14,11 @@
             android:title="@string/name_level_3"/>
     </group>
     <item
+        android:id="@+id/menu_sound_switch"
+        android:title="@string/sound_bar"
+        app:showAsAction="always"
+        app:actionLayout="@layout/switch_item" />
+    <item
         android:id="@+id/menu_exit"
         android:title="@string/menu_exit" />
 </menu>

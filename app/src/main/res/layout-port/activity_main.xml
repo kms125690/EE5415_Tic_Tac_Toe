@@ -4,177 +4,64 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:padding="10dp" >
-    <TableLayout
-        android:paddingTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" >
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
-            <Button
-                android:id="@+id/button0"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginLeft="5dp"
-                android:gravity="center"
-                android:text="1"
-                android:onClick="onButtonClicked"
-                android:textSize="50sp" />
-            <Button
-                android:id="@+id/button1"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginLeft="5dp"
-                android:text="2"
-                android:onClick="onButtonClicked"
-                android:textSize="50sp" />
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="5dp"
-                android:text="3"
-                android:onClick="onButtonClicked"
-                android:textSize="50sp" />
-        </TableRow>
 
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-            <Button
-                android:id="@+id/button3"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginLeft="5dp"
-                android:text="4"
-                android:onClick="onButtonClicked"
-                android:textSize="50sp" />
-            <Button
-                android:id="@+id/button4"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginLeft="5dp"
-                android:text="5"
-                android:onClick="onButtonClicked"
-                android:textSize="50sp" />
-            <Button
-                android:id="@+id/button5"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginLeft="5dp"
-                android:text="6"
-                android:onClick="onButtonClicked"
-                android:textSize="50sp" />
-        </TableRow>
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-            <Button
-                android:id="@+id/button6"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginLeft="5dp"
-                android:text="7"
-                android:onClick="onButtonClicked"
-                android:textSize="50sp" />
-            <Button
-                android:id="@+id/button7"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginLeft="5dp"
-                android:text="8"
-                android:onClick="onButtonClicked"
-                android:textSize="50sp" />
-            <Button
-                android:id="@+id/button8"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginLeft="5dp"
-                android:text="9"
-                android:onClick="onButtonClicked"
-                android:textSize="50sp" />
-        </TableRow>
-    </TableLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp">
+
+        <include layout="@layout/score" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <include layout="@layout/tic_tac_toe" />
+
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="5dp" >
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        >
         <TextView
             android:id="@+id/information"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:gravity="center_horizontal"
             android:text="info"
             android:textSize="20sp" >
         </TextView>
 
-        <Button
-            android:id="@+id/button_restart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:text="@string/start_message"
-            android:textSize="20dp"
-            android:onClick="newGame" >
-        </Button>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textSize="20dp"
-                android:textColor="@color/black"
-                android:text="@string/start">
-            </TextView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-            <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/radio_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <RadioButton android:id="@+id/radio_human"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/user"
-                    android:checked="true"
-                    android:minWidth="100dp"
-                    android:onClick="onRadioButtonClicked"/>
-
-                <RadioButton android:id="@+id/radio_android"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/android"
-                    android:checked="false"
-                    android:minWidth="100dp"
-                    android:onClick="onRadioButtonClicked"/>
-
-            </RadioGroup>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <include layout="@layout/score" />
-
-        </LinearLayout>
+        <include layout="@layout/who_start" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <include layout="@layout/buttons" />
+
+    </LinearLayout>
+
+
 </LinearLayout>
 

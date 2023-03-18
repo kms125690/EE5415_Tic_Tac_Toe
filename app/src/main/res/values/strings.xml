@@ -18,8 +18,13 @@
     <string name="wins">Wins:</string>
     <string name="ties">Ties</string>
 
+    <string name="sound_bar">Click Sound</string>
+    <string name="sound_bar_on">On</string>
+    <string name="sound_bar_off">Off</string>
     <string name="name_level_1">Easy</string>
     <string name="name_level_2">Medium</string>
     <string name="name_level_3">Expert</string>
     <string name="menu_exit">Exit</string>
+
+    <string name="regret">Regret</string>
 </resources>

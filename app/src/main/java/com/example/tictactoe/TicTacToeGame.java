@@ -3,6 +3,7 @@ package com.example.tictactoe;
 import android.util.Log;
 
 import java.util.InputMismatchException;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -20,23 +21,74 @@ public class TicTacToeGame {
     private char mBoard[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     private Random mRand;
     private level difficulty;
+    private int sequcence[] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+    private int win = 0;
 
     public TicTacToeGame() {
         // Seed the random number generator
         mRand = new Random();
-
-        int win = 0; // Set to 1, 2, or 3 when game is over
+        this.difficulty = level.level_2;
     }
 
     /** Clear the board of all X's and O's. */
     public void clearBoard() {
-        for (int i = 0; i < BOARD_SIZE; i++)
+        for (int i = 0; i < BOARD_SIZE; i++) {
             mBoard[i] = OPEN_SPOT;
+            sequcence[i] = -1;
+        }
     }
 
     /** Set the given player at the given location on the game board * */
     public void setMove(char player, int location) {
         mBoard[location] = player;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            if (sequcence[i] == -1) {
+                sequcence[i] = location;
+                break;
+            }
+        }
+        printBoard();
+    }
+
+    public int[] regretMove() {
+        printBoard();
+        printSequcence();
+        int numofBox[] = {-1, -1};
+        final int numOfStep = 2;
+
+        int count = 0;
+        for (int i = BOARD_SIZE - 1; i >= 0; i--) {
+            if (sequcence[i] == -1) {
+                continue;
+            } else {
+                numofBox[count++] = sequcence[i];
+//                mBoard[sequcence[i]] = OPEN_SPOT;
+//                sequcence[i] = -1;
+            }
+            if (count >= numOfStep)
+                break;
+        }
+
+        count = 0;
+        if (numofBox[0] != -1 && numofBox[1] != -1){
+            for (int i = 0; i < numofBox.length; i++) {
+                mBoard[numofBox[i]] = OPEN_SPOT;
+            }
+            for (int i = BOARD_SIZE - 1; i >= 0; i--) {
+                if (sequcence[i] == -1) {
+                    continue;
+                } else {
+                    count++;
+                    sequcence[i] = -1;
+                }
+                if (count >= numOfStep)
+                    break;
+            }
+        }
+        printBoard();
+        printSequcence();
+
+        return numofBox;
     }
 
     // Check for a winner.  Return
@@ -96,8 +148,6 @@ public class TicTacToeGame {
         return 1;
     }
 
-
-
     public int getComputerMoveLevel1() {
         int move;
         do {
@@ -148,12 +198,7 @@ public class TicTacToeGame {
     }
 
     public int getComputerMoveLevel3() {
-        int move;
-        for (int i = 0; i < mBoard.length; i++) {
-            Log.i("print board", String.valueOf(i) + " " +String.valueOf(mBoard[i]));
-        }
-        move = findBestMove(mBoard);
-        Log.i("getComputerMoveLevel3", String.valueOf(move));
+        int move = findBestMove(mBoard);
         mBoard[move] = COMPUTER_PLAYER;
         return move;
     }
@@ -284,6 +329,25 @@ public class TicTacToeGame {
         return bestMove;
     }
 
+    public void printBoard() {
+        System.out.println("printBoard");
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            System.out.print(mBoard[i] + " ");
+            if ((i + 1) % 3 == 0)
+                System.out.println();
+        }
+        System.out.println();
+    }
+
+    public void printSequcence() {
+        System.out.println("printSequcence");
+        System.out.print("Sequcence: ");
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            System.out.print(sequcence[i] + " ");
+        }
+        System.out.println("");
+    }
+
     public char getTurn() {
         return turn;
     }
@@ -298,6 +362,14 @@ public class TicTacToeGame {
 
     public void setDifficulty(level difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public int getWin() {
+        return win;
+    }
+
+    public void setWin(int win) {
+        this.win = win;
     }
 }
 
