@@ -3,7 +3,9 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:padding="10dp" >
+    android:padding="10dp"
+    android:background="@drawable/gradient_list"
+    android:id="@+id/main_layout">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -61,7 +63,6 @@
         <include layout="@layout/buttons" />
 
     </LinearLayout>
-
 
 </LinearLayout>
 

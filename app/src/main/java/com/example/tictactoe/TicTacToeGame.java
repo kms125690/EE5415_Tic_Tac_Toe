@@ -7,10 +7,6 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 
-enum level {
-    level_1, level_2, level_3
-};
-
 public class TicTacToeGame {
     // Characters used to represent the human, computer, and open spots
     public static final char HUMAN_PLAYER = 'X';
@@ -20,14 +16,14 @@ public class TicTacToeGame {
     private char turn = HUMAN_PLAYER;
     private char mBoard[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     private Random mRand;
-    private level difficulty;
+    private Level difficulty;
     private int sequcence[] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
     private int win = 0;
 
     public TicTacToeGame() {
         // Seed the random number generator
         mRand = new Random();
-        this.difficulty = level.level_2;
+        this.difficulty = Level.level_2;
     }
 
     /** Clear the board of all X's and O's. */
@@ -148,6 +144,81 @@ public class TicTacToeGame {
         return 1;
     }
 
+    public WinStruct checkForWinnerStruct() {
+        WinStruct winStruct = new WinStruct();
+        winStruct.winner = 1;
+        winStruct.startBox = -1;
+        winStruct.endBox = -1;
+        // Check horizontal wins
+        for (int i = 0; i <= 6; i += 3)	{
+            if (mBoard[i] == HUMAN_PLAYER && mBoard[i+1] == HUMAN_PLAYER && mBoard[i+2]== HUMAN_PLAYER) {
+                winStruct.winner = 2;
+                winStruct.startBox = i;
+                winStruct.endBox = i+2;
+                return winStruct;
+            }
+            if (mBoard[i] == COMPUTER_PLAYER && mBoard[i+1]== COMPUTER_PLAYER && mBoard[i+2] == COMPUTER_PLAYER) {
+                winStruct.winner = 3;
+                winStruct.startBox = i;
+                winStruct.endBox = i+2;
+                return winStruct;
+            }
+        }
+
+        // Check vertical wins
+        for (int i = 0; i <= 2; i++) {
+            if (mBoard[i] == HUMAN_PLAYER && mBoard[i+3] == HUMAN_PLAYER && mBoard[i+6]== HUMAN_PLAYER) {
+                winStruct.winner = 2;
+                winStruct.startBox = i;
+                winStruct.endBox = i+6;
+                return winStruct;
+            }
+            if (mBoard[i] == COMPUTER_PLAYER && mBoard[i+3] == COMPUTER_PLAYER && mBoard[i+6]== COMPUTER_PLAYER) {
+                winStruct.winner = 3;
+                winStruct.startBox = i;
+                winStruct.endBox = i+6;
+                return winStruct;
+            }
+        }
+
+        // Check for diagonal wins
+        if (mBoard[0] == HUMAN_PLAYER && mBoard[4] == HUMAN_PLAYER && mBoard[8] == HUMAN_PLAYER) {
+            winStruct.winner = 2;
+            winStruct.startBox = 0;
+            winStruct.endBox = 8;
+            return winStruct;
+        }
+        if (mBoard[2] == HUMAN_PLAYER && mBoard[4] == HUMAN_PLAYER && mBoard[6] == HUMAN_PLAYER) {
+            winStruct.winner = 2;
+            winStruct.startBox = 2;
+            winStruct.endBox = 6;
+            return winStruct;
+        }
+        if (mBoard[0] == COMPUTER_PLAYER && mBoard[4] == COMPUTER_PLAYER && mBoard[8] == COMPUTER_PLAYER) {
+            winStruct.winner = 3;
+            winStruct.startBox = 0;
+            winStruct.endBox = 8;
+            return winStruct;
+        }
+        if (mBoard[2] == COMPUTER_PLAYER && mBoard[4] == COMPUTER_PLAYER && mBoard[6] == COMPUTER_PLAYER) {
+            winStruct.winner = 3;
+            winStruct.startBox = 2;
+            winStruct.endBox = 6;
+            return winStruct;
+        }
+
+        // Check for tie
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            // If we find a number, then no one has won yet
+            if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+                winStruct.winner = 0;
+            }
+        }
+
+        // If we make it through the previous loop, all places are taken, so it's a tie
+        return winStruct;
+    }
+
     public int getComputerMoveLevel1() {
         int move;
         do {
@@ -165,7 +236,8 @@ public class TicTacToeGame {
             if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
                 char curr = mBoard[i];
                 mBoard[i] = COMPUTER_PLAYER;
-                if (checkForWinner() == 3) {
+//                if (checkForWinner() == 3) {
+                if (checkForWinnerStruct().winner == 3) {
                     System.out.println("Computer is moving to " + (i + 1));
                     return i;
                 }
@@ -179,7 +251,8 @@ public class TicTacToeGame {
             if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
                 char curr = mBoard[i]; // Save the current number
                 mBoard[i] = HUMAN_PLAYER;
-                if (checkForWinner() == 2) {
+//                if (checkForWinner() == 2) {
+                if (checkForWinnerStruct().winner == 2) {
                     mBoard[i] = COMPUTER_PLAYER;
                     System.out.println("Computer is moving to " + (i + 1));
                     return i;
@@ -356,11 +429,11 @@ public class TicTacToeGame {
         this.turn = turn;
     }
 
-    public level getDifficulty() {
+    public Level getDifficulty() {
         return difficulty;
     }
 
-    public void setDifficulty(level difficulty) {
+    public void setDifficulty(Level difficulty) {
         this.difficulty = difficulty;
     }
 
