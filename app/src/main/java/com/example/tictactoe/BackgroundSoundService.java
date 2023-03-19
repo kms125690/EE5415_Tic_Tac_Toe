@@ -32,11 +32,7 @@ public class BackgroundSoundService extends Service {
         super.onCreate();
 
         mBinder = new LocalBinder();
-        try {
-            startMusic();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        backgroundMusic = MediaPlayer.create(this, R.raw.dungeon);
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -56,15 +52,15 @@ public class BackgroundSoundService extends Service {
 
     public void startMusic() throws IOException {
         backgroundMusic = MediaPlayer.create(this, R.raw.dungeon);
+        backgroundMusic.setLooping(true); // Set looping
+        backgroundMusic.setVolume(0.4f, 0.4f);
         backgroundMusic.seekTo(0);
 //        backgroundMusic.prepare();
         backgroundMusic.start();
-        backgroundMusic.setLooping(true); // Set looping
-        backgroundMusic.setVolume(0.4f, 0.4f);
     }
 
     public void stopMusic() {
         backgroundMusic.pause();
-        backgroundMusic.reset();
+//        backgroundMusic.reset();
     }
 }

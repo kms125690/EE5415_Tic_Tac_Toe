@@ -1,13 +1,14 @@
 package com.example.tictactoe;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -41,18 +43,18 @@ public class MainActivity extends AppCompatActivity {
     private Button mBoardButtons[];
     // Various text displayed
     private TextView mInfoTextView;
-    // Restart Button
-    private Button startButton;
     private TextView mUserScore, mAndroidScore, mTie;
-    private char turn = TicTacToeGame.HUMAN_PLAYER;
     private LinearLayout mMainLayout;
     private ImageView imageView;
     // Game Over
     Boolean mGameOver;
     private RadioGroup radioGroup;
+    private RadioButton radioHuman, radioAndroid;
+    private MenuItem mMenuItemLevel1, mMenuItemLevel2, mMenuItemLevel3;
     private Animation scaleUp, scaleDown;
     private AnimationDrawable animationDrawable;
     private MediaPlayer clickMusic;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch mSoundSwitch;
     Boolean sound = true;
     boolean mBounded;
@@ -63,12 +65,28 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
-        mGame = new TicTacToeGame();
-        startNewGame();
 
+        init();
+
+        mGame = new TicTacToeGame();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         PlayBackgroundSound();
-//        drawConnectedLine();
+        loadPreferences();
+        startNewGame();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            backgroundMusicAction();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -78,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
             unbindService(mConnection);
             mBounded = false;
         }
+        savePreferences();
     }
 
     public void PlayBackgroundSound() {
@@ -85,7 +104,48 @@ public class MainActivity extends AppCompatActivity {
         bindService(mIntent, mConnection, BIND_AUTO_CREATE);
     }
 
-    ServiceConnection mConnection = new ServiceConnection() {
+    public void backgroundMusicAction() throws InterruptedException {
+        if (mServer == null) {
+            Thread callService = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (mServer == null) {
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(500);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        if (mBounded) {
+                            if (sound) {
+                                try {
+                                    mServer.startMusic();
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            } else {
+                                mServer.stopMusic();
+                            }
+                        }
+                    }
+                }
+            });
+            callService.start();
+        } else {
+            if (mBounded) {
+                if (sound) {
+                    try {
+                        mServer.startMusic();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    mServer.stopMusic();
+                }
+            }
+        }
+    }
+
+    public ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mBounded = false;
@@ -123,6 +183,12 @@ public class MainActivity extends AppCompatActivity {
         animationDrawable.start();
 
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
+        radioHuman = (RadioButton) findViewById(R.id.radio_human);
+        radioAndroid = (RadioButton) findViewById(R.id.radio_android);
+
+        mMenuItemLevel1 = (MenuItem) findViewById(R.id.menu_level_1);
+        mMenuItemLevel2 = (MenuItem) findViewById(R.id.menu_level_2);
+        mMenuItemLevel3 = (MenuItem) findViewById(R.id.menu_level_3);
 
         mUserScore = (TextView) findViewById(R.id.tv_user_score);
         mAndroidScore = (TextView) findViewById(R.id.tv_android_score);
@@ -133,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
 
         clickMusic = MediaPlayer.create(this, R.raw.on_click);
         mSoundSwitch = (Switch) findViewById(R.id.switchForActionBar);
-
     }
 
     //--- OnClickListener for Restart a New Game Button
@@ -250,7 +315,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean addScore(@NonNull TextView tv) {
-        tv.getText().toString();
         int score;
         try {
             score = Integer.parseInt(tv.getText().toString());
@@ -349,6 +413,7 @@ public class MainActivity extends AppCompatActivity {
             savedInstanceState.putString("start", getResources().getString(R.string.android));
 
         savedInstanceState.putBoolean("sound", mSoundSwitch.isChecked());
+
         savedInstanceState.putString("curr_message", mInfoTextView.getText().toString());
         savedInstanceState.putString("user_score", mUserScore.getText().toString());
         savedInstanceState.putString("android_score", mAndroidScore.getText().toString());
@@ -375,6 +440,8 @@ public class MainActivity extends AppCompatActivity {
             mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
 
         checkWinner();
+
+        sound = savedInstanceState.getBoolean("sound");
 
         mUserScore.setText(savedInstanceState.getString("user_score"));
         mAndroidScore.setText(savedInstanceState.getString("android_score"));
@@ -405,21 +472,35 @@ public class MainActivity extends AppCompatActivity {
         item.setActionView(R.layout.switch_item);
 
         mSoundSwitch = item.getActionView().findViewById(R.id.switchForActionBar);
+        mSoundSwitch.setChecked(sound);
         mSoundSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 sound = isChecked;
-                if (sound) {
-                    try {
-                        mServer.startMusic();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    mServer.stopMusic();
+                try {
+                    backgroundMusicAction();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             }
         });
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        switch (mGame.getDifficulty()) {
+            case level_1:
+                menu.findItem(R.id.menu_level_1).setChecked(true);
+                break;
+            case level_2:
+                menu.findItem(R.id.menu_level_2).setChecked(true);
+                break;
+            case level_3:
+                menu.findItem(R.id.menu_level_3).setChecked(true);
+                break;
+        }
         return true;
     }
 
@@ -451,4 +532,59 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+
+    public void savePreferences() {
+        SharedPreferences pref = getSharedPreferences("TicTacToe", MODE_PRIVATE);
+        pref.edit().putBoolean("sound", sound).commit();
+
+        int selectedId = radioGroup.getCheckedRadioButtonId();
+        RadioButton selectedRadioButton = (RadioButton) findViewById(selectedId);
+        String str = selectedRadioButton.getText().toString();
+        if (str.equals(getResources().getString(R.string.user)))
+            pref.edit().putString("start", getResources().getString(R.string.user)).commit();
+        else if (str.equals(getResources().getString(R.string.android)))
+            pref.edit().putString("start", getResources().getString(R.string.android)).commit();
+
+        switch (mGame.getDifficulty()) {
+            case level_1:
+                pref.edit().putInt("level", 1).commit();
+                break;
+            case level_2:
+                pref.edit().putInt("level", 2).commit();
+                break;
+            case level_3:
+                pref.edit().putInt("level", 3).commit();
+                break;
+        }
+    }
+
+    public void loadPreferences() {
+        SharedPreferences pref = getSharedPreferences("TicTacToe", MODE_PRIVATE);
+        sound = pref.getBoolean("sound", false);
+
+        String str = pref.getString("start", "");
+        if (str.equals(getResources().getString(R.string.user))) {
+            radioHuman.setChecked(true);
+            radioAndroid.setChecked(false);
+            mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
+        } else if (str.equals(getResources().getString(R.string.android))) {
+            radioHuman.setChecked(false);
+            radioAndroid.setChecked(true);
+            mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
+        }
+
+        int level = pref.getInt("level", 1);
+        switch (level) {
+            case 1:
+                mGame.setDifficulty(Level.level_1);
+                break;
+            case 2:
+                mGame.setDifficulty(Level.level_2);
+                break;
+            case 3:
+                mGame.setDifficulty(Level.level_3);
+                break;
+        }
+    }
+
 }

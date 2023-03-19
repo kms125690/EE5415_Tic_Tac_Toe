@@ -11,17 +11,16 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
 
-        android:focusable="true"
-        android:textAllCaps="false"
-
-        android:textColor="@color/white"
-        android:text="@string/start_message"
-        android:textSize="16dp"
-
         android:layout_weight="1"
         android:background="@drawable/rounded_rectangle"
-        android:onClick="newGame">
-    </androidx.appcompat.widget.AppCompatButton>
+
+        android:focusable="true"
+        android:onClick="newGame"
+        android:text="@string/start_message"
+
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16dp"></androidx.appcompat.widget.AppCompatButton>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_regret"
@@ -31,16 +30,16 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
 
-        android:focusable="true"
-        android:textAllCaps="false"
-
-        android:textColor="@color/white"
-        android:text="@string/regret"
-        android:textSize="16dp"
-
         android:layout_weight="1"
         android:background="@drawable/rounded_rectangle"
-        android:onClick="regretMove">
+
+        android:focusable="true"
+        android:onClick="regretMove"
+        android:text="@string/regret"
+
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16dp">
 
     </androidx.appcompat.widget.AppCompatButton>
 
