@@ -334,12 +334,6 @@ public class MainActivity extends AppCompatActivity {
         imageView.setImageBitmap(bitmap);
     }
 
-    private Point getPointOfView(View view) {
-        int[] location = new int[2];
-        view.getLocationInWindow(location);
-        return new Point(location[0], location[1]);
-    }
-
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         for (int i = 0; i < mBoardButtons.length; i++) {
@@ -381,8 +375,6 @@ public class MainActivity extends AppCompatActivity {
             mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
 
         checkWinner();
-
-        sound = savedInstanceState.getBoolean("sound");
 
         mUserScore.setText(savedInstanceState.getString("user_score"));
         mAndroidScore.setText(savedInstanceState.getString("android_score"));
