@@ -44,9 +44,6 @@ public class BackgroundSoundService extends Service {
         return startId;
     }
 
-    public void onStart(Intent intent, int startId) {
-    }
-
     @Override
     public void onDestroy() {
         backgroundMusic.stop();
@@ -63,7 +60,7 @@ public class BackgroundSoundService extends Service {
 //        backgroundMusic.prepare();
         backgroundMusic.start();
         backgroundMusic.setLooping(true); // Set looping
-        backgroundMusic.setVolume(0.5f, 0.5f);
+        backgroundMusic.setVolume(0.4f, 0.4f);
     }
 
     public void stopMusic() {

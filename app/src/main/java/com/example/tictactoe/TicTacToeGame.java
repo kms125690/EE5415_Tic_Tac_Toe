@@ -1,11 +1,6 @@
 package com.example.tictactoe;
 
-import android.util.Log;
-
-import java.util.InputMismatchException;
-import java.util.LinkedList;
 import java.util.Random;
-import java.util.Scanner;
 
 public class TicTacToeGame {
     // Characters used to represent the human, computer, and open spots
@@ -17,7 +12,7 @@ public class TicTacToeGame {
     private char mBoard[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     private Random mRand;
     private Level difficulty;
-    private int sequcence[] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+    private int sequence[] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
     private int win = 0;
 
     public TicTacToeGame() {
@@ -30,7 +25,7 @@ public class TicTacToeGame {
     public void clearBoard() {
         for (int i = 0; i < BOARD_SIZE; i++) {
             mBoard[i] = OPEN_SPOT;
-            sequcence[i] = -1;
+            sequence[i] = -1;
         }
     }
 
@@ -38,8 +33,8 @@ public class TicTacToeGame {
     public void setMove(char player, int location) {
         mBoard[location] = player;
         for (int i = 0; i < BOARD_SIZE; i++) {
-            if (sequcence[i] == -1) {
-                sequcence[i] = location;
+            if (sequence[i] == -1) {
+                sequence[i] = location;
                 break;
             }
         }
@@ -47,44 +42,42 @@ public class TicTacToeGame {
     }
 
     public int[] regretMove() {
-        printBoard();
-        printSequcence();
-        int numofBox[] = {-1, -1};
+//        printBoard();
+//        printSequence();
+        int numOfBox[] = {-1, -1};
         final int numOfStep = 2;
 
         int count = 0;
         for (int i = BOARD_SIZE - 1; i >= 0; i--) {
-            if (sequcence[i] == -1) {
+            if (sequence[i] == -1) {
                 continue;
             } else {
-                numofBox[count++] = sequcence[i];
-//                mBoard[sequcence[i]] = OPEN_SPOT;
-//                sequcence[i] = -1;
+                numOfBox[count++] = sequence[i];
             }
             if (count >= numOfStep)
                 break;
         }
 
         count = 0;
-        if (numofBox[0] != -1 && numofBox[1] != -1){
-            for (int i = 0; i < numofBox.length; i++) {
-                mBoard[numofBox[i]] = OPEN_SPOT;
+        if (numOfBox[0] != -1 && numOfBox[1] != -1){
+            for (int i = 0; i < numOfBox.length; i++) {
+                mBoard[numOfBox[i]] = OPEN_SPOT;
             }
             for (int i = BOARD_SIZE - 1; i >= 0; i--) {
-                if (sequcence[i] == -1) {
+                if (sequence[i] == -1) {
                     continue;
                 } else {
                     count++;
-                    sequcence[i] = -1;
+                    sequence[i] = -1;
                 }
                 if (count >= numOfStep)
                     break;
             }
         }
-        printBoard();
-        printSequcence();
+//        printBoard();
+//        printSequence();
 
-        return numofBox;
+        return numOfBox;
     }
 
     // Check for a winner.  Return
@@ -92,58 +85,6 @@ public class TicTacToeGame {
     //  1 if it's a tie
     //  2 if X won
     //  3 if O won
-    public int checkForWinner() {
-        // Check horizontal wins
-        for (int i = 0; i <= 6; i += 3)	{
-            if (mBoard[i] == HUMAN_PLAYER &&
-                    mBoard[i+1] == HUMAN_PLAYER &&
-                    mBoard[i+2]== HUMAN_PLAYER)
-                return 2;
-            if (mBoard[i] == COMPUTER_PLAYER &&
-                    mBoard[i+1]== COMPUTER_PLAYER &&
-                    mBoard[i+2] == COMPUTER_PLAYER)
-                return 3;
-        }
-
-        // Check vertical wins
-        for (int i = 0; i <= 2; i++) {
-            if (mBoard[i] == HUMAN_PLAYER &&
-                    mBoard[i+3] == HUMAN_PLAYER &&
-                    mBoard[i+6]== HUMAN_PLAYER)
-                return 2;
-            if (mBoard[i] == COMPUTER_PLAYER &&
-                    mBoard[i+3] == COMPUTER_PLAYER &&
-                    mBoard[i+6]== COMPUTER_PLAYER)
-                return 3;
-        }
-
-        // Check for diagonal wins
-        if ((mBoard[0] == HUMAN_PLAYER &&
-                mBoard[4] == HUMAN_PLAYER &&
-                mBoard[8] == HUMAN_PLAYER) ||
-                (mBoard[2] == HUMAN_PLAYER &&
-                        mBoard[4] == HUMAN_PLAYER &&
-                        mBoard[6] == HUMAN_PLAYER))
-            return 2;
-        if ((mBoard[0] == COMPUTER_PLAYER &&
-                mBoard[4] == COMPUTER_PLAYER &&
-                mBoard[8] == COMPUTER_PLAYER) ||
-                (mBoard[2] == COMPUTER_PLAYER &&
-                        mBoard[4] == COMPUTER_PLAYER &&
-                        mBoard[6] == COMPUTER_PLAYER))
-            return 3;
-
-        // Check for tie
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            // If we find a number, then no one has won yet
-            if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER)
-                return 0;
-        }
-
-        // If we make it through the previous loop, all places are taken, so it's a tie
-        return 1;
-    }
-
     public WinStruct checkForWinnerStruct() {
         WinStruct winStruct = new WinStruct();
         winStruct.winner = 1;
@@ -412,11 +353,11 @@ public class TicTacToeGame {
         System.out.println();
     }
 
-    public void printSequcence() {
-        System.out.println("printSequcence");
-        System.out.print("Sequcence: ");
+    public void printSequence() {
+        System.out.println("printSequence");
+        System.out.print("Sequence: ");
         for (int i = 0; i < BOARD_SIZE; i++) {
-            System.out.print(sequcence[i] + " ");
+            System.out.print(sequence[i] + " ");
         }
         System.out.println("");
     }

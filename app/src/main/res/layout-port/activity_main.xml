@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/gradient_list"
     android:orientation="vertical"
     android:padding="10dp"
-    android:background="@drawable/gradient_list"
-    android:id="@+id/main_layout">
+    tools:ignore="MissingDefaultResource">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,16 +36,15 @@
         android:layout_gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        >
+        android:paddingBottom="10dp">
+
         <TextView
             android:id="@+id/information"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="info"
-            android:textSize="20sp" >
-        </TextView>
+            android:textSize="20sp" />
 
     </LinearLayout>
 

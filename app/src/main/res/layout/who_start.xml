@@ -7,11 +7,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:textSize="20dp"
-        android:textColor="@color/black"
         android:paddingLeft="50dp"
-        android:text="@string/start">
-    </TextView>
+        android:text="@string/start"
+        android:textColor="@color/black"
+        android:textSize="20dp"></TextView>
 
     <RadioGroup
         android:id="@+id/radio_group"
@@ -20,21 +19,23 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <RadioButton android:id="@+id/radio_human"
+        <RadioButton
+            android:id="@+id/radio_human"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/user"
             android:checked="true"
             android:minWidth="100dp"
-            android:onClick="onRadioButtonClicked"/>
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/user" />
 
-        <RadioButton android:id="@+id/radio_android"
+        <RadioButton
+            android:id="@+id/radio_android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/android"
             android:checked="false"
             android:minWidth="100dp"
-            android:onClick="onRadioButtonClicked"/>
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/android" />
 
     </RadioGroup>
 

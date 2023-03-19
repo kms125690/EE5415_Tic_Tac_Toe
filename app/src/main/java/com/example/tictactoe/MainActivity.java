@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -26,7 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,18 +46,17 @@ public class MainActivity extends AppCompatActivity {
     private TextView mUserScore, mAndroidScore, mTie;
     private char turn = TicTacToeGame.HUMAN_PLAYER;
     private LinearLayout mMainLayout;
-//    private TableLayout mticTacToe;
     private ImageView imageView;
     // Game Over
     Boolean mGameOver;
-    RadioGroup radioGroup;
-    Animation scaleUp, scaleDown;
-    AnimationDrawable animationDrawable;
-    MediaPlayer clickMusic;
-    Switch mSoundSwitch;
+    private RadioGroup radioGroup;
+    private Animation scaleUp, scaleDown;
+    private AnimationDrawable animationDrawable;
+    private MediaPlayer clickMusic;
+    private Switch mSoundSwitch;
     Boolean sound = true;
     boolean mBounded;
-    BackgroundSoundService mServer;
+    private BackgroundSoundService mServer;
 
 
     @Override
@@ -77,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(mBounded) {
+        if (mBounded) {
             unbindService(mConnection);
             mBounded = false;
         }
-    };
+    }
 
     public void PlayBackgroundSound() {
         Intent mIntent = new Intent(MainActivity.this, BackgroundSoundService.class);
@@ -117,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
         mInfoTextView = (TextView) findViewById(R.id.information);
 
         mMainLayout = (LinearLayout) findViewById(R.id.main_layout);
-//        mticTacToe = (TableLayout) findViewById(R.id.table_tic_tac_toe);
         imageView = (ImageView) findViewById(R.id.imageView);
 
         mMainLayout.setBackgroundResource(R.drawable.gradient_list);
@@ -136,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         scaleDown = AnimationUtils.loadAnimation(this, R.anim.scale_down);
 
         clickMusic = MediaPlayer.create(this, R.raw.on_click);
-
+        mSoundSwitch = (Switch) findViewById(R.id.switchForActionBar);
 
     }
 
@@ -145,7 +141,9 @@ public class MainActivity extends AppCompatActivity {
         startNewGame();
     }
 
-    public void regretMove(View v) { userRegretMove(); }
+    public void regretMove(View v) {
+        userRegretMove();
+    }
 
     private void setMove(char player, int location) {
         mGame.setMove(player, location);
@@ -160,12 +158,14 @@ public class MainActivity extends AppCompatActivity {
     //---Handles clicks on the game board buttons
     private class ButtonClickListener implements View.OnClickListener {
         int location;
+
         public ButtonClickListener(int location) {
             this.location = location;
         }
+
         @Override
         public void onClick(View v) {
-            if (mGameOver == false) {
+            if (!mGameOver) {
                 if (mBoardButtons[location].isEnabled()) {
                     if (sound)
                         clickMusic.start();
@@ -184,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void checkWinner() {
-//        int winner = mGame.checkForWinner();
         WinStruct winStruct = mGame.checkForWinnerStruct();
         if (winStruct.winner == 0) {
             mInfoTextView.setTextColor(Color.rgb(0, 0, 0));
@@ -222,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // who go first
-        switch (mGame.getTurn()){
+        switch (mGame.getTurn()) {
             case TicTacToeGame.HUMAN_PLAYER:
                 mInfoTextView.setText(R.string.user_start);
                 break;
@@ -234,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void userRegretMove() {
-        if (mGame != null && mGameOver == false) {
+        if (mGame != null && !mGameOver) {
             int regretMoves[] = mGame.regretMove();
             if (regretMoves[0] == -1 || regretMoves[1] == -1)
                 return;
@@ -251,8 +250,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean addScore(@NonNull TextView tv) {
-        if (tv.getText().toString() == null)
-            return false;
+        tv.getText().toString();
         int score;
         try {
             score = Integer.parseInt(tv.getText().toString());
@@ -268,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
         if (winStruct.winner == 0) {
             mInfoTextView.setText(R.string.android_turn);
             int move = -1;
-            switch (mGame.getDifficulty()){
+            switch (mGame.getDifficulty()) {
                 case level_1:
                     move = mGame.getComputerMoveLevel1();
                     break;
@@ -287,42 +285,44 @@ public class MainActivity extends AppCompatActivity {
 
     private void drawConnectedLine(int startBox, int endBox) {
         // FIXME: dimension
-        final int width = 512;
-        final int height = 512;
+        final int width = 600;
+        final int height = 600;
+        final int width_box = width / 3;
+        final int height_box = height / 3;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.TRANSPARENT);
         Paint paint = new Paint();
         paint.setColor(Color.MAGENTA);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(40);
+        paint.setStrokeWidth(10);
         paint.setAntiAlias(true);
 
         if (startBox == 0 && endBox == 2)
-            canvas.drawLine(0, 0, width, 0, paint);
+            canvas.drawLine(width_box / 2, height_box / 2, 2 * width_box + width_box / 2, height_box / 2, paint);
         if (startBox == 3 && endBox == 5)
-            canvas.drawLine(0, height/2, width, height/2, paint);
+            canvas.drawLine(width_box / 2, height_box + height_box / 2, 2 * width_box + width_box / 2, height_box + height_box / 2, paint);
         if (startBox == 6 && endBox == 8)
-            canvas.drawLine(0, height, width, height, paint);
+            canvas.drawLine(width_box / 2, 2 * height_box + height_box / 2, 2 * width_box + width_box / 2, 2 * height_box + height_box / 2, paint);
 
         if (startBox == 0 && endBox == 6)
-            canvas.drawLine(0, 0, 0, height, paint);
+            canvas.drawLine(width_box / 2, height_box / 2, width_box / 2, 2 * height_box + height_box / 2, paint);
         if (startBox == 1 && endBox == 7)
-            canvas.drawLine(width/2, height/2, width/2, height/2, paint);
+            canvas.drawLine(width_box + width_box / 2, height_box / 2, width_box + width_box / 2, 2 * height_box + height_box / 2, paint);
         if (startBox == 2 && endBox == 8)
-            canvas.drawLine(width, 0, width, height, paint);
+            canvas.drawLine(2 * width_box + width_box / 2, height_box / 2, 2 * width_box + width_box / 2, 2 * height_box + height_box / 2, paint);
 
         if (startBox == 0 && endBox == 8)
-            canvas.drawLine(0, 0, width, height, paint);
+            canvas.drawLine(width_box / 2, height_box / 2, 2 * width_box + width_box / 2, 2 * height_box + height_box / 2, paint);
         if (startBox == 2 && endBox == 6)
-            canvas.drawLine(width, 0, 0, height, paint);
+            canvas.drawLine(2 * width_box + width_box / 2, height_box / 2, width_box / 2, 2 * height_box + height_box / 2, paint);
 
         imageView.setImageBitmap(bitmap);
     }
 
     private void clearConnectedLine() {
-        final int width = 512;
-        final int height = 512;
+        final int width = 600;
+        final int height = 600;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.TRANSPARENT);
@@ -354,6 +354,7 @@ public class MainActivity extends AppCompatActivity {
         else if (selectedRadioButton.getText().toString().equals(getResources().getString(R.string.android)))
             savedInstanceState.putString("start", getResources().getString(R.string.android));
 
+        savedInstanceState.putBoolean("sound", mSoundSwitch.isChecked());
         savedInstanceState.putString("curr_message", mInfoTextView.getText().toString());
         savedInstanceState.putString("user_score", mUserScore.getText().toString());
         savedInstanceState.putString("android_score", mAndroidScore.getText().toString());
@@ -366,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         for (int i = 0; i < mBoardButtons.length; i++) {
             String str_i = savedInstanceState.getString("button_" + i);
-            if (!str_i.isEmpty() && str_i != null) {
+            if (!str_i.isEmpty()) {
                 char char_i = str_i.charAt(0);
                 if (char_i == TicTacToeGame.HUMAN_PLAYER || char_i == TicTacToeGame.COMPUTER_PLAYER)
                     setMove(char_i, i);
@@ -381,13 +382,15 @@ public class MainActivity extends AppCompatActivity {
 
         checkWinner();
 
+        sound = savedInstanceState.getBoolean("sound");
+
         mUserScore.setText(savedInstanceState.getString("user_score"));
         mAndroidScore.setText(savedInstanceState.getString("android_score"));
         mTie.setText(savedInstanceState.getString("tie"));
     }
 
     public void onRadioButtonClicked(@NonNull View view) {
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.radio_human:
                 Toast.makeText(this, "HUMAN_PLAYER", Toast.LENGTH_SHORT).show();
                 if (mGame != null)
@@ -433,19 +436,19 @@ public class MainActivity extends AppCompatActivity {
 //        boolean checked = ((RadioButton) item).isChecked();
         switch (item.getItemId()) {
             case R.id.menu_level_1:
-                item.setChecked(item.isChecked() ? false : true);
+                item.setChecked(!item.isChecked());
                 Toast.makeText(this, getResources().getString(R.string.name_level_1), Toast.LENGTH_SHORT).show();
                 if (mGame != null)
                     mGame.setDifficulty(Level.level_1);
                 return true;
             case R.id.menu_level_2:
-                item.setChecked(item.isChecked() ? false : true);
+                item.setChecked(!item.isChecked());
                 Toast.makeText(this, getResources().getString(R.string.name_level_2), Toast.LENGTH_SHORT).show();
                 if (mGame != null)
                     mGame.setDifficulty(Level.level_2);
                 return true;
             case R.id.menu_level_3:
-                item.setChecked(item.isChecked() ? false : true);
+                item.setChecked(!item.isChecked());
                 Toast.makeText(this, getResources().getString(R.string.name_level_3), Toast.LENGTH_SHORT).show();
                 if (mGame != null)
                     mGame.setDifficulty(Level.level_3);
