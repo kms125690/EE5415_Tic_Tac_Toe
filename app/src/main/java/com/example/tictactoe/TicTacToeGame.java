@@ -18,7 +18,7 @@ public class TicTacToeGame {
     public TicTacToeGame() {
         // Seed the random number generator
         mRand = new Random();
-        this.difficulty = Level.level_2;
+        this.difficulty = Level.level_1; // Placeholder only
     }
 
     /** Clear the board of all X's and O's. */
@@ -42,8 +42,6 @@ public class TicTacToeGame {
     }
 
     public int[] regretMove() {
-//        printBoard();
-//        printSequence();
         int numOfBox[] = {-1, -1};
         final int numOfStep = 2;
 
@@ -74,8 +72,6 @@ public class TicTacToeGame {
                     break;
             }
         }
-//        printBoard();
-//        printSequence();
 
         return numOfBox;
     }
@@ -177,7 +173,6 @@ public class TicTacToeGame {
             if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
                 char curr = mBoard[i];
                 mBoard[i] = COMPUTER_PLAYER;
-//                if (checkForWinner() == 3) {
                 if (checkForWinnerStruct().winner == 3) {
                     System.out.println("Computer is moving to " + (i + 1));
                     return i;
@@ -192,7 +187,6 @@ public class TicTacToeGame {
             if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
                 char curr = mBoard[i]; // Save the current number
                 mBoard[i] = HUMAN_PLAYER;
-//                if (checkForWinner() == 2) {
                 if (checkForWinnerStruct().winner == 2) {
                     mBoard[i] = COMPUTER_PLAYER;
                     System.out.println("Computer is moving to " + (i + 1));
@@ -386,41 +380,3 @@ public class TicTacToeGame {
         this.win = win;
     }
 }
-
-//    NOT USED
-//    public void getUserMove()
-//    {
-//        // Eclipse throws a NullPointerException with Console.readLine
-//        // Known bug: https://bugs.eclipse.org/bugs/show_bug.cgi?id=122429
-//        //Console console = System.console();
-//
-//        Scanner s = new Scanner(System.in);
-//
-//        int move = -1;
-//
-//        while (move == -1) {
-//            try {
-//                System.out.print("Enter your move: ");
-//                move = s.nextInt();
-//
-//                while (move < 1 || move > BOARD_SIZE ||
-//                        mBoard[move-1] == HUMAN_PLAYER || mBoard[move-1] == COMPUTER_PLAYER) {
-//
-//                    if (move < 1 || move > BOARD_SIZE)
-//                        System.out.println("Please enter a move between 1 and " + BOARD_SIZE + ".");
-//                    else
-//                        System.out.println("That space is occupied.  Please choose another space.");
-//
-//                    System.out.print("Enter your move: ");
-//                    move = s.nextInt();
-//                }
-//            }
-//            catch (InputMismatchException ex) {
-//                System.out.println("Please enter a number between 1 and " + BOARD_SIZE + ".");
-//                s.next();  // Get next line so we start fresh
-//                move = -1;
-//            }
-//        }
-//
-//        mBoard[move-1] = HUMAN_PLAYER;
-//    }
