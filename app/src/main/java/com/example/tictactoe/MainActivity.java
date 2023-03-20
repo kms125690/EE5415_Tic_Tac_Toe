@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
     Boolean sound = true;
     boolean mBounded;
     private BackgroundSoundService mServer;
-    private Boolean alreadyLoaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         init();
 
         mGame = new TicTacToeGame();
+
         loadPreferences();
     }
 
@@ -76,14 +76,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        PlayBackgroundSound();
-
         startNewGame();
+
+        PlayBackgroundSound();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         try {
             backgroundMusicAction();
         } catch (InterruptedException e) {
@@ -416,8 +417,6 @@ public class MainActivity extends AppCompatActivity {
             savedInstanceState.putString("start", getResources().getString(R.string.android));
 
         savedInstanceState.putBoolean("sound", mSoundSwitch.isChecked());
-        
-        savedInstanceState.putBoolean("loaded", alreadyLoaded);
 
         savedInstanceState.putString("curr_message", mInfoTextView.getText().toString());
         savedInstanceState.putString("user_score", mUserScore.getText().toString());
@@ -430,6 +429,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+
+        mGame.clearBoard();
+        for (int i = 0; i < mBoardButtons.length; i++) {
+            mBoardButtons[i].setText("");
+            mBoardButtons[i].setEnabled(true);
+            mBoardButtons[i].setOnClickListener(new ButtonClickListener(i));
+        }
+
         for (int i = 0; i < mBoardButtons.length; i++) {
             String str_i = savedInstanceState.getString("button_" + i);
             if (!str_i.isEmpty()) {
@@ -440,6 +447,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String str = savedInstanceState.getString("start");
+
         if (str.equals(getResources().getString(R.string.user)))
             mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
         else
@@ -449,28 +457,26 @@ public class MainActivity extends AppCompatActivity {
 
         sound = savedInstanceState.getBoolean("sound");
 
-        alreadyLoaded = savedInstanceState.getBoolean("loaded");
-
         mUserScore.setText(savedInstanceState.getString("user_score"));
         mAndroidScore.setText(savedInstanceState.getString("android_score"));
         mTie.setText(savedInstanceState.getString("tie"));
-
     }
 
     public void onRadioButtonClicked(@NonNull View view) {
         switch (view.getId()) {
             case R.id.radio_human:
                 Toast.makeText(this, "HUMAN_PLAYER", Toast.LENGTH_SHORT).show();
-                if (mGame != null)
+                if (mGame != null) {
                     mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
+                }
                 break;
             case R.id.radio_android:
                 Toast.makeText(this, "COMPUTER_PLAYER", Toast.LENGTH_SHORT).show();
-                if (mGame != null)
+                if (mGame != null) {
                     mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
+                }
                 break;
         }
-        startNewGame();
     }
 
     @Override
@@ -574,8 +580,10 @@ public class MainActivity extends AppCompatActivity {
         String str = pref.getString("start", "");
         if (str.equals(getResources().getString(R.string.user))) {
             radioHuman.setChecked(true);
+            mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
         } else {
             radioAndroid.setChecked(true);
+            mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
         }
 
         int level = pref.getInt("level", 1);

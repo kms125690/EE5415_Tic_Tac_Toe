@@ -176,7 +176,6 @@ public class TicTacToeGame {
                 char curr = mBoard[i];
                 mBoard[i] = COMPUTER_PLAYER;
                 if (checkForWinnerStruct().winner == 3) {
-                    System.out.println("Computer is moving to " + (i + 1));
                     return i;
                 } else
                     mBoard[i] = curr;
@@ -190,7 +189,6 @@ public class TicTacToeGame {
                 mBoard[i] = HUMAN_PLAYER;
                 if (checkForWinnerStruct().winner == 2) {
                     mBoard[i] = COMPUTER_PLAYER;
-                    System.out.println("Computer is moving to " + (i + 1));
                     return i;
                 } else
                     mBoard[i] = curr;
@@ -330,8 +328,7 @@ public class TicTacToeGame {
                 }
             }
         }
-        System.out.printf("The value of the best Move Value " + "is : %d\n", bestVal);
-        System.out.printf("The value of the best Move " + "is : %d\n", bestMove);
+
         return bestMove;
     }
 
