@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         startNewGame();
 
-        PlayBackgroundSound();
+        playBackgroundSound();
     }
 
     @Override
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         savePreferences();
     }
 
-    public void PlayBackgroundSound() {
+    public void playBackgroundSound() {
         Intent mIntent = new Intent(MainActivity.this, BackgroundSoundService.class);
         bindService(mIntent, mConnection, BIND_AUTO_CREATE);
     }
