@@ -9,7 +9,7 @@ public class TicTacToeGame {
     public static final char OPEN_SPOT = ' ';
     public static final int BOARD_SIZE = 9;
     private char turn = HUMAN_PLAYER;
-    private char mBoard[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    private char mBoard[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
     private Random mRand;
     private Level difficulty;
     private int sequence[] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
@@ -21,7 +21,9 @@ public class TicTacToeGame {
         this.difficulty = Level.level_1; // Placeholder only
     }
 
-    /** Clear the board of all X's and O's. */
+    /**
+     * Clear the board of all X's and O's.
+     */
     public void clearBoard() {
         for (int i = 0; i < BOARD_SIZE; i++) {
             mBoard[i] = OPEN_SPOT;
@@ -29,7 +31,9 @@ public class TicTacToeGame {
         }
     }
 
-    /** Set the given player at the given location on the game board * */
+    /**
+     * Set the given player at the given location on the game board *
+     */
     public void setMove(char player, int location) {
         mBoard[location] = player;
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -57,7 +61,7 @@ public class TicTacToeGame {
         }
 
         count = 0;
-        if (numOfBox[0] != -1 && numOfBox[1] != -1){
+        if (numOfBox[0] != -1 && numOfBox[1] != -1) {
             for (int i = 0; i < numOfBox.length; i++) {
                 mBoard[numOfBox[i]] = OPEN_SPOT;
             }
@@ -87,33 +91,33 @@ public class TicTacToeGame {
         winStruct.startBox = -1;
         winStruct.endBox = -1;
         // Check horizontal wins
-        for (int i = 0; i <= 6; i += 3)	{
-            if (mBoard[i] == HUMAN_PLAYER && mBoard[i+1] == HUMAN_PLAYER && mBoard[i+2]== HUMAN_PLAYER) {
+        for (int i = 0; i <= 6; i += 3) {
+            if (mBoard[i] == HUMAN_PLAYER && mBoard[i + 1] == HUMAN_PLAYER && mBoard[i + 2] == HUMAN_PLAYER) {
                 winStruct.winner = 2;
                 winStruct.startBox = i;
-                winStruct.endBox = i+2;
+                winStruct.endBox = i + 2;
                 return winStruct;
             }
-            if (mBoard[i] == COMPUTER_PLAYER && mBoard[i+1]== COMPUTER_PLAYER && mBoard[i+2] == COMPUTER_PLAYER) {
+            if (mBoard[i] == COMPUTER_PLAYER && mBoard[i + 1] == COMPUTER_PLAYER && mBoard[i + 2] == COMPUTER_PLAYER) {
                 winStruct.winner = 3;
                 winStruct.startBox = i;
-                winStruct.endBox = i+2;
+                winStruct.endBox = i + 2;
                 return winStruct;
             }
         }
 
         // Check vertical wins
         for (int i = 0; i <= 2; i++) {
-            if (mBoard[i] == HUMAN_PLAYER && mBoard[i+3] == HUMAN_PLAYER && mBoard[i+6]== HUMAN_PLAYER) {
+            if (mBoard[i] == HUMAN_PLAYER && mBoard[i + 3] == HUMAN_PLAYER && mBoard[i + 6] == HUMAN_PLAYER) {
                 winStruct.winner = 2;
                 winStruct.startBox = i;
-                winStruct.endBox = i+6;
+                winStruct.endBox = i + 6;
                 return winStruct;
             }
-            if (mBoard[i] == COMPUTER_PLAYER && mBoard[i+3] == COMPUTER_PLAYER && mBoard[i+6]== COMPUTER_PLAYER) {
+            if (mBoard[i] == COMPUTER_PLAYER && mBoard[i + 3] == COMPUTER_PLAYER && mBoard[i + 6] == COMPUTER_PLAYER) {
                 winStruct.winner = 3;
                 winStruct.startBox = i;
-                winStruct.endBox = i+6;
+                winStruct.endBox = i + 6;
                 return winStruct;
             }
         }
@@ -165,8 +169,7 @@ public class TicTacToeGame {
         return move;
     }
 
-    public int getComputerMoveLevel2()
-    {
+    public int getComputerMoveLevel2() {
         int move;
         // First see if there's a move O can make to win
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -176,8 +179,7 @@ public class TicTacToeGame {
                 if (checkForWinnerStruct().winner == 3) {
                     System.out.println("Computer is moving to " + (i + 1));
                     return i;
-                }
-                else
+                } else
                     mBoard[i] = curr;
             }
         }
@@ -191,14 +193,12 @@ public class TicTacToeGame {
                     mBoard[i] = COMPUTER_PLAYER;
                     System.out.println("Computer is moving to " + (i + 1));
                     return i;
-                }
-                else
+                } else
                     mBoard[i] = curr;
             }
         }
         // Generate random move
-        do
-        {
+        do {
             move = mRand.nextInt(BOARD_SIZE);
         } while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);
         mBoard[move] = COMPUTER_PLAYER;
@@ -260,8 +260,7 @@ public class TicTacToeGame {
     }
 
     // This is the minimax function. It considers all the possible ways the game can go and returns the value of the board
-    static public int minimax(char board[], int depth, Boolean isMax)
-    {
+    static public int minimax(char board[], int depth, Boolean isMax) {
         int score = evaluate(board);
 
         // If Maximizer has won the game return his/her evaluated score
@@ -332,8 +331,8 @@ public class TicTacToeGame {
                 }
             }
         }
-        System.out.printf("The value of the best Move Value " +  "is : %d\n", bestVal);
-        System.out.printf("The value of the best Move " +  "is : %d\n", bestMove);
+        System.out.printf("The value of the best Move Value " + "is : %d\n", bestVal);
+        System.out.printf("The value of the best Move " + "is : %d\n", bestMove);
         return bestMove;
     }
 

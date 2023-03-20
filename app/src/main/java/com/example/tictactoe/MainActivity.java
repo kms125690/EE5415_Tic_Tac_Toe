@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     boolean mBounded;
     private BackgroundSoundService mServer;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         PlayBackgroundSound();
         loadPreferences();
         startNewGame();
@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         try {
             backgroundMusicAction();
         } catch (InterruptedException e) {
@@ -92,10 +93,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+
         if (mBounded) {
             unbindService(mConnection);
             mBounded = false;
         }
+
         savePreferences();
     }
 
@@ -263,13 +266,13 @@ public class MainActivity extends AppCompatActivity {
             addScore(mUserScore);
             mInfoTextView.setText(R.string.user_win);
             mGameOver = true;
-            drawConnectedLine(winStruct.startBox, winStruct.endBox);
+            drawVictoryLine(winStruct.startBox, winStruct.endBox);
         } else {
             mInfoTextView.setTextColor(Color.rgb(200, 0, 0));
             addScore(mAndroidScore);
             mInfoTextView.setText(R.string.android_win);
             mGameOver = true;
-            drawConnectedLine(winStruct.startBox, winStruct.endBox);
+            drawVictoryLine(winStruct.startBox, winStruct.endBox);
         }
     }
 
@@ -277,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
     private void startNewGame() {
         mGameOver = false;
         mGame.clearBoard();
-        clearConnectedLine();
+        clearVictoryLine();
         //---Reset all buttons
         for (int i = 0; i < mBoardButtons.length; i++) {
             mBoardButtons[i].setText("");
@@ -347,10 +350,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void drawConnectedLine(int startBox, int endBox) {
-        // FIXME: dimension
-        final int width = 600;
-        final int height = 600;
+    private void drawVictoryLine(int startBox, int endBox) {
+        final int width = 300;
+        final int height = 300;
         final int width_box = width / 3;
         final int height_box = height / 3;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -359,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
         Paint paint = new Paint();
         paint.setColor(Color.MAGENTA);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(10);
+        paint.setStrokeWidth(5);
         paint.setAntiAlias(true);
 
         if (startBox == 0 && endBox == 2)
@@ -384,9 +386,9 @@ public class MainActivity extends AppCompatActivity {
         imageView.setImageBitmap(bitmap);
     }
 
-    private void clearConnectedLine() {
-        final int width = 600;
-        final int height = 600;
+    private void clearVictoryLine() {
+        final int width = 300;
+        final int height = 300;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.TRANSPARENT);

@@ -5,7 +5,7 @@
         <shape>
             <solid android:color="#ff3276b1" />
             <stroke android:width="2dp" android:color="#ff357ebd" />
-            <corners android:radius="5dp"/>
+            <corners android:radius="5dp" />
         </shape>
     </item>
 
@@ -13,7 +13,7 @@
         <shape>
             <solid android:color="#d4e5f3" />
             <stroke android:width="2dp" android:color="#a5357ebd" />
-            <corners android:radius="5dp"/>
+            <corners android:radius="5dp" />
         </shape>
     </item>
 
@@ -22,7 +22,7 @@
         <shape>
             <solid android:color="#74B9F4" />
             <stroke android:width="2dp" android:color="#41A6FD" />
-            <corners android:radius="5dp"/>
+            <corners android:radius="5dp" />
         </shape>
     </item>
 
