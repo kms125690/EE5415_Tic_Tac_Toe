@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     Boolean sound = true;
     boolean mBounded;
     private BackgroundSoundService mServer;
+    private Boolean alreadyLoaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         init();
 
         mGame = new TicTacToeGame();
+        loadPreferences();
     }
 
     @Override
@@ -75,14 +77,13 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         PlayBackgroundSound();
-        loadPreferences();
+
         startNewGame();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         try {
             backgroundMusicAction();
         } catch (InterruptedException e) {
@@ -411,15 +412,18 @@ public class MainActivity extends AppCompatActivity {
         RadioButton selectedRadioButton = (RadioButton) findViewById(selectedId);
         if (selectedRadioButton.getText().toString().equals(getResources().getString(R.string.user)))
             savedInstanceState.putString("start", getResources().getString(R.string.user));
-        else if (selectedRadioButton.getText().toString().equals(getResources().getString(R.string.android)))
+        else
             savedInstanceState.putString("start", getResources().getString(R.string.android));
 
         savedInstanceState.putBoolean("sound", mSoundSwitch.isChecked());
+        
+        savedInstanceState.putBoolean("loaded", alreadyLoaded);
 
         savedInstanceState.putString("curr_message", mInfoTextView.getText().toString());
         savedInstanceState.putString("user_score", mUserScore.getText().toString());
         savedInstanceState.putString("android_score", mAndroidScore.getText().toString());
         savedInstanceState.putString("tie", mTie.getText().toString());
+
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -438,16 +442,19 @@ public class MainActivity extends AppCompatActivity {
         String str = savedInstanceState.getString("start");
         if (str.equals(getResources().getString(R.string.user)))
             mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
-        else if (str.equals(getResources().getString(R.string.android)))
+        else
             mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
 
         checkWinner();
 
         sound = savedInstanceState.getBoolean("sound");
 
+        alreadyLoaded = savedInstanceState.getBoolean("loaded");
+
         mUserScore.setText(savedInstanceState.getString("user_score"));
         mAndroidScore.setText(savedInstanceState.getString("android_score"));
         mTie.setText(savedInstanceState.getString("tie"));
+
     }
 
     public void onRadioButtonClicked(@NonNull View view) {
@@ -544,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
         String str = selectedRadioButton.getText().toString();
         if (str.equals(getResources().getString(R.string.user)))
             pref.edit().putString("start", getResources().getString(R.string.user)).commit();
-        else if (str.equals(getResources().getString(R.string.android)))
+        else
             pref.edit().putString("start", getResources().getString(R.string.android)).commit();
 
         switch (mGame.getDifficulty()) {
@@ -567,12 +574,8 @@ public class MainActivity extends AppCompatActivity {
         String str = pref.getString("start", "");
         if (str.equals(getResources().getString(R.string.user))) {
             radioHuman.setChecked(true);
-            radioAndroid.setChecked(false);
-            mGame.setTurn(TicTacToeGame.HUMAN_PLAYER);
-        } else if (str.equals(getResources().getString(R.string.android))) {
-            radioHuman.setChecked(false);
+        } else {
             radioAndroid.setChecked(true);
-            mGame.setTurn(TicTacToeGame.COMPUTER_PLAYER);
         }
 
         int level = pref.getInt("level", 1);
@@ -587,6 +590,7 @@ public class MainActivity extends AppCompatActivity {
                 mGame.setDifficulty(Level.level_3);
                 break;
         }
+
     }
 
 }

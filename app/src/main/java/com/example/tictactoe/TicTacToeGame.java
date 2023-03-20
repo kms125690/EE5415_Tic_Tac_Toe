@@ -42,7 +42,6 @@ public class TicTacToeGame {
                 break;
             }
         }
-        printBoard();
     }
 
     public int[] regretMove() {
