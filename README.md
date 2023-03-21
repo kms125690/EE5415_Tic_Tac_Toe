@@ -11,4 +11,3 @@
 - [x] Quit Function
 - [x] Animation
 - [x] Sound Effects
-- [x] Regret
