@@ -1,4 +1,4 @@
-package com.example.tictactoe;
+package com.ee5415.tictactoe;
 
 public class WinStruct {
     public int winner;

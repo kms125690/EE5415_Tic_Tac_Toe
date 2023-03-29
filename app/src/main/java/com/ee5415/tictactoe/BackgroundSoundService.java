@@ -1,4 +1,4 @@
-package com.example.tictactoe;
+package com.ee5415.tictactoe;
 
 import android.app.Service;
 import android.content.Intent;
@@ -10,6 +10,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+
+import com.ee5415.tictactoe.R;
 
 public class BackgroundSoundService extends Service {
     MediaPlayer backgroundMusic;

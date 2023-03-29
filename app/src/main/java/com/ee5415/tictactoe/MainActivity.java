@@ -1,4 +1,4 @@
-package com.example.tictactoe;
+package com.ee5415.tictactoe;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -31,6 +31,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.ee5415.tictactoe.R;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
